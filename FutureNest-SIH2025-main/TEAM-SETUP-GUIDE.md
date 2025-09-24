@@ -1,6 +1,6 @@
 # 🚀 FutureNest SIH2025 - Team Setup Guide
 
-## For Team Members (Super Simple!)
+## For Team Members
 
 ### Option 1: One-Command Setup ⚡
 ```bash
