@@ -1,4 +1,4 @@
-# 🎓 EduBuddy(CODE REAPERS) - AI Student Advisor Platform
+# 🎓 EduBuddy(CODE REAPERS) -  AI Student Advisor Platform
 
 [![SIH 2025](https://img.shields.io/badge/SIH-2025-blue.svg)](https://sih.gov.in/)
 [![React](https://img.shields.io/badge/React-18-61DAFB.svg)](https://reactjs.org/)
