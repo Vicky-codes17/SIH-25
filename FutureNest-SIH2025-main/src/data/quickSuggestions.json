@@ -1,0 +1,38 @@
+{
+  "initial": [
+    "Recommend colleges for engineering",
+    "Show me career roadmaps",
+    "Find scholarship opportunities", 
+    "Suggest programming courses"
+  ],
+  "courses": [
+    "Popular programming courses",
+    "Business management programs",
+    "Design and creativity courses",
+    "Healthcare related courses"
+  ],
+  "colleges": [
+    "Top engineering colleges",
+    "Best medical colleges",
+    "Business schools rankings",
+    "Arts and science colleges"
+  ],
+  "scholarships": [
+    "Government scholarships",
+    "Merit-based scholarships", 
+    "International scholarships",
+    "Need-based financial aid"
+  ],
+  "career": [
+    "Technology career paths",
+    "Healthcare career options",
+    "Creative industry jobs",
+    "Government job opportunities"
+  ],
+  "exams": [
+    "JEE preparation tips",
+    "NEET study strategy",
+    "CAT exam guidance",
+    "UPSC preparation plan"
+  ]
+}

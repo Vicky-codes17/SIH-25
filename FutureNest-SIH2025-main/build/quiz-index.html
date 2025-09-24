@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Assessment Portal</title>
+    <style>
+        :root {
+            --bg: #0b0c10;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #6b7280;
+            --brand: #0ea5e9;
+            --brand-strong: #0284c7;
+            --accent: #f59e0b;
+            --pill: #f1f5f9;
+            --pill-active: #e0f2fe;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(2,8,23,0.08);
+            --radius: 14px;
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+            background: linear-gradient(180deg, #eef2ff, #f8fafc);
+            color: var(--text);
+        }
+        
+        .container {
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .landing-card {
+            width: min(600px, 90vw);
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .header {
+            padding: 40px 30px 30px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+            color: white;
+        }
+        
+        .main-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.02em;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .description {
+            font-size: 18px;
+            color: var(--muted);
+            margin-bottom: 40px;
+            line-height: 1.7;
+            text-align: left;
+            max-width: 540px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .career-section {
+            margin-bottom: 30px;
+            text-align: center;
+            max-width: 540px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .career-section h3 {
+            text-align: center;
+        }
+        .career-section p {
+            text-align: left;
+        }
+        
+        .career-icon {
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: var(--brand);
+        }
+        
+        .career-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .career-icon:hover {
+            transform: scale(1.1);
+            color: var(--brand-strong);
+        }
+        
+
+        
+        .start-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            position: relative;
+            min-width: 160px;
+        }
+        
+        .start-button:hover:not(.loading) {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+        
+        .start-button:active:not(.loading) {
+            transform: translateY(0);
+        }
+        
+        .start-button.loading {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .skip-button {
+            background: transparent;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+            padding: 14px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            min-width: 140px;
+        }
+        
+        .skip-button:hover:not(.loading) {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+        
+        .skip-button:active:not(.loading) {
+            transform: translateY(0);
+        }
+        
+        .skip-button.loading {
+            background: transparent;
+            color: #6b7280;
+            border-color: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .features {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        
+        .feature {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .feature-icon {
+            margin-bottom: 8px;
+            color: var(--brand);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .feature-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+        
+        .feature-desc {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 520px) {
+            .main-title {
+                font-size: 28px;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .description {
+                font-size: 16px;
+                text-align: center;
+            }
+            
+            .career-section {
+                text-align: center;
+            }
+            
+            .career-section p {
+                text-align: center !important;
+            }
+            
+            .career-icon svg {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .start-button, .skip-button {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="landing-card">
+            <div class="header">
+                <h1 class="main-title">Assessment Portal</h1>
+                <p class="subtitle">Discover Your Potential</p>
+            </div>
+            
+            <div class="content">
+                <p class="description">
+                    Discover your perfect career path with our intelligent guidance system. Take assessments, explore streams, and find your ideal college and course.
+                </p>
+                
+                <div class="career-section">
+                    <div class="career-icon" id="dynamicIcon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                    </div>
+                    <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 15px; color: var(--brand);">Career Quiz</h3>
+                    <p style="font-size: 16px; color: var(--muted); margin-bottom: 30px; text-align: left;">
+                        Get personalized career recommendations based on your interests and aptitude.
+                    </p>
+                </div>
+                
+                <div class="button-group">
+                    <button class="start-button" id="startBtn" onclick="startAssessment()">
+                        Start Assessment
+                    </button>
+                    <button class="skip-button" id="skipBtn" onclick="skipQuiz()">
+                        Skip Quiz
+                    </button>
+                </div>
+                
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"/>
+                                <line x1="12" y1="20" x2="12" y2="4"/>
+                                <line x1="6" y1="20" x2="6" y2="14"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Personalized</div>
+                        <div class="feature-desc">Tailored questions based on your responses</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Quick</div>
+                        <div class="feature-desc">Complete in just 5-10 minutes</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <circle cx="12" cy="12" r="6"/>
+                                <circle cx="12" cy="12" r="2"/>
+                            </svg>
+                        </div>
+                        <div class="feature-title">Accurate</div>
+                        <div class="feature-desc">Science-based assessment methodology</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Array of education-related SVG icons
+        const educationIcons = [
+            // Graduation cap
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+            // Book
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+            // Computer
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+            // Calculator
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="8" y1="18" x2="8" y2="18"/></svg>',
+            // Microscope
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6l6-4 2 2v8a2 2 0 0 1-2 2Z"/></svg>',
+            // Lightbulb
+            '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 12 2c-3.3 0-6 2.7-6 6 0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'
+        ];
+        
+        // Function to get a random icon
+        function getRandomIcon() {
+            return educationIcons[Math.floor(Math.random() * educationIcons.length)];
+        }
+        
+        // Function to change icon with animation
+        function changeIcon() {
+            const iconElement = document.getElementById('dynamicIcon');
+            if (iconElement) {
+                // Add fade out effect
+                iconElement.style.transform = 'scale(0.8)';
+                iconElement.style.opacity = '0.5';
+                
+                setTimeout(() => {
+                    // Change icon
+                    iconElement.innerHTML = getRandomIcon();
+                    // Fade back in
+                    iconElement.style.transform = 'scale(1)';
+                    iconElement.style.opacity = '1';
+                }, 200);
+            }
+        }
+        
+        // Reset buttons to normal state on page load
+        function resetButtons() {
+            const startBtn = document.getElementById('startBtn');
+            const skipBtn = document.getElementById('skipBtn');
+            
+            if (startBtn) {
+                startBtn.classList.remove('loading');
+                startBtn.disabled = false;
+                startBtn.innerHTML = 'Start Assessment';
+            }
+            
+            if (skipBtn) {
+                skipBtn.classList.remove('loading');
+                skipBtn.disabled = false;
+                skipBtn.innerHTML = 'Skip Quiz';
+            }
+        }
+        
+        // Set initial random icon and change it periodically
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reset buttons to normal state
+            resetButtons();
+            
+            // Change icon every 3 seconds
+            setInterval(changeIcon, 3000);
+            
+            // Add click event to manually change icon
+            const iconElement = document.getElementById('dynamicIcon');
+            if (iconElement) {
+                iconElement.addEventListener('click', changeIcon);
+            }
+        });
+        
+        function showLoadingState(button, originalText, loadingText) {
+            button.classList.add('loading');
+            button.disabled = true;
+            button.innerHTML = '<span class="loading-spinner"></span>' + loadingText;
+        }
+        
+        function startAssessment() {
+            const button = document.getElementById('startBtn');
+            
+            // Prevent multiple clicks
+            if (button.disabled || button.classList.contains('loading')) {
+                return;
+            }
+            
+            showLoadingState(button, 'Start Assessment', 'Starting Quiz...');
+            
+            // Simulate loading time before redirect
+            setTimeout(() => {
+                window.location.href = 'project.html';
+            }, 1500);
+        }
+        
+        function skipQuiz() {
+            const button = document.getElementById('skipBtn');
+            
+            // Prevent multiple clicks
+            if (button.disabled || button.classList.contains('loading')) {
+                return;
+            }
+            
+            showLoadingState(button, 'Skip Quiz', 'Loading Dashboard...');
+            
+            // Simulate loading time before redirect
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1200);
+        }
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                startAssessment();
+            }
+        });
+        
+        // Change icon on page visibility change (when user comes back to page)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                // Reset buttons when user comes back to page
+                resetButtons();
+                setTimeout(changeIcon, 500);
+            }
+        });
+        
+        // Reset buttons when page loads (including back navigation)
+        window.addEventListener('pageshow', function(event) {
+            resetButtons();
+        });
+    </script>
+</body>
+</html>

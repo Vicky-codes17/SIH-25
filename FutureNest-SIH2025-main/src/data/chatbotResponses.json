@@ -1,0 +1,61 @@
+{
+  "greeting": [
+    "👋 Hi there! I'm EduBuddy, your AI student advisor! I can help with college recommendations, career roadmaps, scholarship info, and learning resources. How can I assist you today?",
+    "Hello! 🎓 I'm here to guide you through your educational journey. I can provide insights on courses, colleges, careers, and much more!",
+    "Hey! Welcome to your personal education assistant. Ready to explore opportunities and plan your future? What would you like to know?",
+    "Greetings! 🌟 I'm EduBuddy, equipped with comprehensive educational data to help you make informed decisions about your academic and career path!"
+  ],
+  "courses": [
+    "📚 Great choice! I can recommend courses based on your interests and career goals. We have extensive data on:\n\n• Programming & Technology courses\n• Business & Management programs\n• Creative & Design courses\n• Science & Engineering disciplines\n• Healthcare & Medical programs\n\nWhat field interests you most?",
+    "🎯 Course selection is crucial for your future! I can help you explore:\n\n• Popular trending courses\n• Industry-demand programs\n• Certification opportunities\n• Skill-building workshops\n• Online vs offline options\n\nTell me about your background and interests!",
+    "✨ Let me help you find the perfect course! Our database includes:\n\n• Beginner to advanced levels\n• Short-term & long-term programs\n• Industry-recognized certifications\n• Hands-on project-based learning\n• Career-focused specializations\n\nWhat's your current skill level and learning goal?"
+  ],
+  "colleges": [
+    "🏫 College selection is a major decision! I have comprehensive data on top institutions including:\n\n• Engineering colleges (IITs, NITs, Private)\n• Medical colleges (AIIMS, Government, Private)\n• Business schools (IIMs, Top B-Schools)\n• Arts & Science colleges\n• Technical institutes\n\nWhat field are you targeting? Also, tell me your:\n• Entrance exam scores\n• Location preferences\n• Budget range",
+    "🎓 Choosing the right college shapes your future! I can help you with:\n\n• College rankings & ratings\n• Placement records & statistics\n• Fee structures & scholarships\n• Campus facilities & culture\n• Alumni networks\n• Admission requirements\n\nWhich stream interests you - Engineering, Medical, Business, or Arts?",
+    "📖 Smart question about higher education! Our database covers:\n\n• Top-ranked universities nationwide\n• Specialized institutions by field\n• Government vs private colleges\n• Distance learning options\n• International universities\n\nWhat are your academic preferences and career aspirations?"
+  ],
+  "scholarships": [
+    "💰 Scholarships can make quality education affordable! Here are key opportunities:\n\n• Merit-based scholarships\n• Need-based financial aid\n• Government schemes (NSP, PM Scholarship)\n• Private foundation grants\n• International scholarships\n• Sports & talent-based awards\n\nTell me about your:\n• Academic performance\n• Financial situation\n• Special talents/achievements\n• Preferred study destination",
+    "🏆 Excellent thinking about funding your education! Popular scholarship programs:\n\n• National Scholarship Portal (NSP)\n• INSPIRE Scholarship for Science students\n• Kishore Vaigyanik Protsahan Yojana (KVPY)\n• JN Tata Endowment for higher studies\n• Minority scholarships\n• State government schemes\n\nWhat's your academic profile and field of interest?",
+    "💡 Great approach to education funding! Consider these options:\n\n• Academic excellence scholarships\n• Research fellowships\n• Corporate sponsorship programs\n• Community service awards\n• Women in STEM scholarships\n• Entrepreneurship grants\n\nShare your achievements and goals for personalized recommendations!"
+  ],
+  "career": [
+    "🚀 Career planning is essential for success! Based on current market trends, here are promising fields:\n\n• Technology (AI/ML, Cybersecurity, Cloud Computing)\n• Healthcare (Digital Health, Biotechnology)\n• Business (Digital Marketing, Data Analytics)\n• Creative (UX/UI Design, Content Creation)\n• Sustainability (Green Tech, Renewable Energy)\n\nWhat are your:\n• Academic interests\n• Skills & strengths\n• Career aspirations\n• Work preferences?",
+    "💼 Smart to think about career early! I can create personalized roadmaps for:\n\n• Traditional careers (Doctor, Engineer, Teacher)\n• Emerging fields (Data Scientist, Digital Marketer)\n• Entrepreneurship opportunities\n• Government services\n• Creative professions\n• Remote work possibilities\n\nTell me about your personality, interests, and dream lifestyle!",
+    "🎯 Career guidance is my specialty! Let's explore:\n\n• High-growth industries\n• Future-proof skills\n• Salary expectations\n• Work-life balance\n• Geographic opportunities\n• Skill development paths\n\nWhat motivates you most - creativity, stability, impact, or growth?"
+  ],
+  "roadmaps": [
+    "🗺️ Career roadmaps provide clear direction! I can create structured paths for:\n\n• Web Development (Frontend → Fullstack → Team Lead)\n• Data Science (Analyst → Data Scientist → ML Engineer)\n• Business (Analyst → Manager → Executive)\n• Healthcare (Student → Specialist → Consultant)\n• Design (Junior → Senior → Creative Director)\n\nWhich field excites you most? I'll create a step-by-step plan!",
+    "📈 Structured learning accelerates success! Popular roadmap categories:\n\n• Technology career paths\n• Healthcare progressions\n• Business advancement tracks\n• Creative industry journeys\n• Government service routes\n• Entrepreneurship timelines\n\nTell me your starting point and dream destination!",
+    "✨ Let's turn your dreams into achievable milestones! I can plan:\n\n• 6-month quick wins\n• 2-year major goals\n• 5-year vision achievement\n• Skills to develop at each stage\n• Resources and courses needed\n• Networking opportunities\n\nWhat's your ultimate career aspiration?"
+  ],
+  "exams": [
+    "📝 Exam preparation strategy is crucial! Major competitive exams I can help with:\n\n• Engineering: JEE Main/Advanced, BITSAT, VITEEE\n• Medical: NEET, AIIMS, JIPMER\n• Management: CAT, XAT, SNAP, NMAT\n• Civil Services: UPSC CSE, State PSCs\n• Banking: IBPS, SBI, RBI\n• Defense: NDA, CDS, AFCAT\n\nWhich exam are you targeting? I'll provide:\n• Study schedule\n• Resource recommendations\n• Mock test strategies\n• Time management tips",
+    "🎯 Smart exam planning leads to success! I can guide you through:\n\n• Exam pattern analysis\n• Syllabus breakdown\n• Preparation timeline\n• Best study materials\n• Mock test schedules\n• Stress management techniques\n• Previous year trends\n\nTell me your target exam and current preparation level!",
+    "🏆 Competitive exams open doors to premier institutions! Our preparation support covers:\n\n• Subject-wise strategies\n• Weak area improvement\n• Speed and accuracy building\n• Revision techniques\n• Exam day preparation\n• Backup plan strategies\n\nWhat's your dream college or career goal?"
+  ],
+  "ebooks": [
+    "📚 Our e-book collection is extensive! Categories include:\n\n• Academic textbooks by subject\n• Competitive exam preparation\n• Skill development guides\n• Career guidance books\n• Research papers & journals\n• Industry reports\n• Self-improvement materials\n\nWhat specific topics are you looking for? I can recommend the most relevant and updated resources!",
+    "📖 Great choice for learning resources! Our digital library offers:\n\n• Subject-wise study materials\n• Previous year question banks\n• Reference books by top authors\n• Quick revision guides\n• Formula compilations\n• Case study collections\n\nWhich academic level and subjects interest you most?"
+  ],
+  "help": [
+    "🤖 I'm EduBuddy, your comprehensive educational assistant! Here's how I can help:\n\n🎓 **Academic Guidance:**\n• Course recommendations\n• College selection advice\n• Study planning\n\n💼 **Career Support:**\n• Career path exploration\n• Skill development roadmaps\n• Industry insights\n\n💰 **Financial Assistance:**\n• Scholarship opportunities\n• Education loan guidance\n• Cost planning\n\n📝 **Exam Preparation:**\n• Study strategies\n• Resource recommendations\n• Mock test guidance\n\n📚 **Learning Resources:**\n• E-book suggestions\n• Course materials\n• Research papers\n\nWhat would you like to explore first?",
+    "✨ Welcome to your personal education ecosystem! I have access to comprehensive data on:\n\n• 1000+ colleges and universities\n• 500+ course programs\n• 200+ scholarship opportunities\n• 100+ career paths\n• Latest industry trends\n• Exam preparation strategies\n\nI'm here to make your educational journey smoother and more informed. How can I assist you today?"
+  ],
+  "default": [
+    "🤔 That's an interesting question! I'd love to help you with that. Could you provide a bit more context? I specialize in:\n\n• Educational guidance and course selection\n• College recommendations and admissions\n• Career planning and roadmaps\n• Scholarship and funding opportunities\n• Exam preparation strategies\n• Learning resources and e-books\n\nWhat specific area would you like to explore?",
+    "💭 I want to give you the most helpful response! Could you tell me more about what you're looking for? I have extensive knowledge in:\n\n• Academic planning\n• Career development\n• College selection\n• Skill building\n• Financial planning for education\n• Competitive exam preparation\n\nFeel free to ask about any of these topics!",
+    "🌟 I'm here to guide you through your educational journey! While I didn't quite catch that, I can definitely help with:\n\n• Finding the right courses and colleges\n• Planning your career path\n• Discovering scholarship opportunities\n• Preparing for competitive exams\n• Accessing study materials and e-books\n\nWhat would you like to know more about?"
+  ],
+  "thanks": [
+    "😊 You're very welcome! I'm always here to help with your educational and career questions. Feel free to ask anything else!",
+    "🎉 Glad I could help! Remember, I'm your 24/7 education buddy. Don't hesitate to reach out whenever you need guidance!",
+    "✨ Happy to assist! Your success is my mission. Come back anytime you need educational advice or have questions!"
+  ],
+  "goodbye": [
+    "👋 Goodbye! Best of luck with your educational journey. I'll be here whenever you need guidance!",
+    "🌟 Take care! Remember, every step you take toward learning is a step toward a brighter future. See you soon!",
+    "💫 Farewell! Keep pursuing your dreams and never stop learning. I'm always here when you need support!"
+  ]
+}

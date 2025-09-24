@@ -1,0 +1,182 @@
+[
+  {
+    "ebookId": "ds_algo_python",
+    "title": "Data Structures and Algorithms in Python",
+    "author": "Michael T. Goodrich",
+    "subject": "Computer Science",
+    "year": 2016,
+    "publisher": "Wiley",
+    "language": "English",
+    "pages": 744,
+    "format": "PDF",
+    "edition": "1st",
+    "downloadLink": "https://example.com/ds-algo-python.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/81zG5ry6vLL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 1250
+    }
+  },
+  {
+    "ebookId": "ai_modern_approach",
+    "title": "Artificial Intelligence: A Modern Approach",
+    "author": "Stuart Russell, Peter Norvig",
+    "subject": "Artificial Intelligence",
+    "year": 2020,
+    "publisher": "Pearson",
+    "language": "English",
+    "pages": 1136,
+    "format": "PDF",
+    "edition": "4th",
+    "downloadLink": "https://example.com/ai-modern-approach.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/91yPfB8K1HL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 2200
+    }
+  },
+  {
+    "ebookId": "clean_code",
+    "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+    "author": "Robert C. Martin",
+    "subject": "Software Engineering",
+    "year": 2008,
+    "publisher": "Prentice Hall",
+    "language": "English",
+    "pages": 464,
+    "format": "PDF",
+    "edition": "1st",
+    "downloadLink": "https://example.com/clean-code.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/41xShlnTZTL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 1800
+    }
+  },
+  {
+    "ebookId": "intro_ml_python",
+    "title": "Introduction to Machine Learning with Python",
+    "author": "Andreas C. Müller, Sarah Guido",
+    "subject": "Machine Learning",
+    "year": 2016,
+    "publisher": "O'Reilly Media",
+    "language": "English",
+    "pages": 400,
+    "format": "PDF",
+    "edition": "1st",
+    "downloadLink": "https://example.com/ml-python.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/81UwxjK9cSL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 1600
+    }
+  },
+  {
+    "ebookId": "deep_learning",
+    "title": "Deep Learning",
+    "author": "Ian Goodfellow, Yoshua Bengio, Aaron Courville",
+    "subject": "Deep Learning",
+    "year": 2016,
+    "publisher": "MIT Press",
+    "language": "English",
+    "pages": 775,
+    "format": "PDF",
+    "edition": "1st",
+    "downloadLink": "https://example.com/deep-learning.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/71j4cQ8Z+UL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 2100
+    }
+  },
+  {
+    "ebookId": "python_crash_course",
+    "title": "Python Crash Course",
+    "author": "Eric Matthes",
+    "subject": "Programming",
+    "year": 2019,
+    "publisher": "No Starch Press",
+    "language": "English",
+    "pages": 544,
+    "format": "PDF",
+    "edition": "2nd",
+    "downloadLink": "https://example.com/python-crash-course.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/81drfTT9ZfL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 2000
+    }
+  },
+  {
+    "ebookId": "pragmatic_programmer",
+    "title": "The Pragmatic Programmer",
+    "author": "Andrew Hunt, David Thomas",
+    "subject": "Software Development",
+    "year": 2019,
+    "publisher": "Addison-Wesley",
+    "language": "English",
+    "pages": 352,
+    "format": "PDF",
+    "edition": "20th Anniversary Edition",
+    "downloadLink": "https://example.com/pragmatic-programmer.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/81F7si2S6-L.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 1750
+    }
+  },
+  {
+    "ebookId": "db_systems",
+    "title": "Database System Concepts",
+    "author": "Abraham Silberschatz, Henry F. Korth, S. Sudarshan",
+    "subject": "Databases",
+    "year": 2020,
+    "publisher": "McGraw-Hill",
+    "language": "English",
+    "pages": 1376,
+    "format": "PDF",
+    "edition": "7th",
+    "downloadLink": "https://example.com/db-systems.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/81gTwYAhU7L.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 1500
+    }
+  },
+  {
+    "ebookId": "os_concepts",
+    "title": "Operating System Concepts",
+    "author": "Abraham Silberschatz, Peter B. Galvin, Greg Gagne",
+    "subject": "Operating Systems",
+    "year": 2018,
+    "publisher": "Wiley",
+    "language": "English",
+    "pages": 976,
+    "format": "PDF",
+    "edition": "10th",
+    "downloadLink": "https://example.com/os-concepts.pdf",
+    "images": [
+      "https://m.media-amazon.com/images/I/81Rr3dTQguL.jpg"
+    ],
+    "metadata": {
+      "verified": true,
+      "popularity": 1400
+    }
+  }
+]

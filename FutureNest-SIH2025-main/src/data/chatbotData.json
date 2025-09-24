@@ -1,0 +1,71 @@
+{
+  "responses": {
+    "greeting": [
+      "Hello! I'm your FutureNest AI advisor. I'm here to help you with career guidance, course recommendations, and educational queries. How can I assist you today?",
+      "Hi there! I'm your educational advisor. Ready to explore your future? What would you like to know?",
+      "Welcome to FutureNest! I'm here to guide you through your educational journey. What's on your mind?",
+      "Greetings! I'm your personal AI career counselor. Let's discover the perfect path for your future!"
+    ],
+    "career": [
+      "Career planning is crucial for your success! 🚀 Consider your interests, skills, and market demand. Which field excites you most - Technology, Healthcare, Business, Arts, or Engineering?",
+      "Great question about careers! I'd recommend exploring growth industries like AI/ML, Data Science, Digital Marketing, Healthcare, and Renewable Energy. What's your educational background?",
+      "Career guidance is my specialty! 💼 Let's create a personalized roadmap. Tell me about your interests, skills, and dream job goals.",
+      "The job market is evolving rapidly! Consider future-proof careers in cybersecurity, biotechnology, UX design, or sustainable technology. What interests you most?"
+    ],
+    "courses": [
+      "Excellent! We have curated courses in various domains: 📚\n• Programming (Python, JavaScript, Java)\n• Data Science & AI\n• Digital Marketing\n• Design (UI/UX, Graphic)\n• Business & Finance\n\nWhich area catches your interest?",
+      "Course selection depends on your career goals! Are you looking for:\n🎯 Technical skills (Coding, Data Analysis)\n🎯 Creative skills (Design, Content Creation)\n🎯 Business skills (Marketing, Finance)\n🎯 Professional development",
+      "I can help you find the perfect course! 🎓 Our platform offers:\n• Beginner to Advanced levels\n• Industry-recognized certifications\n• Hands-on projects\n• Expert mentorship\n\nWhat's your current skill level?",
+      "Smart choice to upskill! 📈 Popular courses include Web Development, Machine Learning, Digital Marketing, and Cloud Computing. What's your timeline and learning preference?"
+    ],
+    "colleges": [
+      "College selection is a life-changing decision! 🏫 Consider these factors:\n• Course quality & curriculum\n• Placement records & industry connections\n• Location & campus facilities\n• Fees & financial aid\n• Alumni network\n\nWhat's your priority - Engineering, Medical, Business, or Arts?",
+      "Choosing the right college shapes your future! 🎯 I can help you with:\n• Top colleges by field\n• Admission requirements\n• Scholarship opportunities\n• Campus comparisons\n\nWhich field are you targeting?",
+      "Great question about higher education! 📖 Our database includes:\n• IITs, NITs, IIITs for Engineering\n• AIIMS, Government Medical Colleges\n• IIMs, Top B-Schools\n• Central & State Universities\n\nWhat are your entrance exam scores?",
+      "College planning made easy! 🎓 Tell me your:\n• Preferred field of study\n• Location preference\n• Budget range\n• Entrance exam scores\n\nI'll suggest the best matches!"
+    ],
+    "scholarships": [
+      "Scholarships can make education affordable! 💰 Available options:\n• Merit-based scholarships\n• Need-based financial aid\n• Government schemes (PM Scholarship, NSP)\n• Private foundation grants\n• International scholarships\n\nWhat's your academic profile?",
+      "Great thinking about scholarships! 🏆 Popular schemes:\n• National Scholarship Portal (NSP)\n• INSPIRE Scholarship for Science\n• Kishore Vaigyanik Protsahan Yojana (KVPY)\n• JN Tata Endowment\n\nWhich category fits you best?",
+      "Scholarship hunting is smart! 💡 Consider:\n• Academic performance scholarships\n• Sports & extracurricular scholarships\n• Community service awards\n• Minority & reservation scholarships\n\nTell me about your achievements!"
+    ],
+    "exams": [
+      "Exam preparation is key to success! 📝 Popular competitive exams:\n• JEE Main/Advanced (Engineering)\n• NEET (Medical)\n• CAT/XAT (Management)\n• UPSC CSE (Civil Services)\n• GATE (Engineering PG)\n\nWhich exam are you targeting?",
+      "Smart to plan for competitive exams! 🎯 I can help with:\n• Exam patterns & syllabus\n• Preparation strategies\n• Mock tests & practice\n• Time management tips\n• Success stories\n\nWhich field interests you?",
+      "Competitive exams open doors to premier institutions! 🚪 Our resources cover:\n• Engineering (JEE, BITSAT, VITEEE)\n• Medical (NEET, AIIMS)\n• Management (CAT, SNAP, NMAT)\n• Banking (IBPS, SBI)\n\nWhat's your target?"
+    ],
+    "roadmaps": [
+      "Career roadmaps provide clear direction! 🗺️ Popular paths:\n• Web Development (Frontend → Fullstack → Senior Developer)\n• Data Science (Analytics → ML Engineer → Data Scientist)\n• Business (Analyst → Manager → Executive)\n• Design (Junior → Senior → Creative Director)\n\nWhich interests you?",
+      "Structured learning paths accelerate growth! 📈 I can create roadmaps for:\n• Technology careers\n• Healthcare professions\n• Business & Finance\n• Creative industries\n• Government services\n\nWhat's your dream career?",
+      "Roadmaps turn dreams into achievable goals! ✨ Let me help you plan:\n• Short-term milestones (6 months)\n• Medium-term goals (2 years)\n• Long-term vision (5+ years)\n• Skills to develop\n• Resources needed\n\nShare your aspirations!"
+    ],
+    "default": [
+      "That's an interesting question! 🤔 Could you provide more details so I can give you better guidance? I'm here to help with careers, courses, colleges, scholarships, and exam preparation.",
+      "I'd be happy to help with that! 😊 Can you tell me more about your specific situation? I specialize in educational guidance and career planning.",
+      "Great question! 💭 Let me help you with that. I can assist with course recommendations, career guidance, college selection, scholarship information, and exam preparation. What specific aspect would you like to explore?",
+      "I'm here to guide you! 🌟 While I can help with educational and career-related queries, could you be more specific about what you'd like to know? I have extensive knowledge about courses, colleges, careers, and scholarships."
+    ],
+    "help": [
+      "I'm your FutureNest AI advisor! 🤖 I can help you with:\n\n🎓 **Education:**\n• Course recommendations\n• College selection\n• Admission guidance\n\n💼 **Career:**\n• Career planning\n• Skill development\n• Industry insights\n\n💰 **Financial:**\n• Scholarship information\n• Education loans\n• Cost planning\n\n📝 **Exams:**\n• Preparation strategies\n• Mock tests\n• Success tips\n\nWhat would you like to explore?",
+      "Welcome to your personal education assistant! ✨ I'm equipped to help with:\n\n• **Career Guidance** - Find your perfect career path\n• **Course Selection** - Choose the right programs\n• **College Advice** - Pick the best institutions\n• **Scholarship Info** - Discover funding opportunities\n• **Exam Prep** - Master competitive exams\n• **Skill Development** - Build relevant expertise\n\nHow can I assist you today?"
+    ]
+  },
+  "quickReplies": [
+    "Tell me about career options",
+    "Show me popular courses",
+    "Help me choose a college",
+    "Find scholarships for me",
+    "Exam preparation tips",
+    "Create my career roadmap"
+  ],
+  "keywords": {
+    "greeting": ["hello", "hi", "hey", "good morning", "good afternoon", "good evening", "greetings"],
+    "career": ["career", "job", "work", "profession", "employment", "future", "salary", "growth"],
+    "courses": ["course", "study", "learn", "training", "skill", "certification", "program", "class"],
+    "colleges": ["college", "university", "institution", "admission", "campus", "degree", "undergraduate", "postgraduate"],
+    "scholarships": ["scholarship", "funding", "financial aid", "grant", "money", "fee", "cost", "affordable"],
+    "exams": ["exam", "test", "competition", "entrance", "preparation", "score", "rank", "qualify"],
+    "roadmaps": ["roadmap", "path", "plan", "steps", "guide", "direction", "journey", "progress"],
+    "help": ["help", "assist", "support", "what can you do", "how", "guide me", "options"]
+  }
+}

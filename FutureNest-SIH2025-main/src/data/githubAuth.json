@@ -1,0 +1,9 @@
+{
+  "users": [],
+  "authConfig": {
+    "provider": "github", 
+    "clientId": "your-github-client-id",
+    "redirectUri": "http://localhost:3000/auth/github/callback",
+    "scopes": ["user:email", "read:user"]
+  }
+}

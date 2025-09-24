@@ -1,0 +1,318 @@
+[
+  {
+    "collegeId": "iit_bombay",
+    "name": "Indian Institute of Technology Bombay",
+    "location": {
+      "state": "Maharashtra", 
+      "city": "Mumbai",
+      "district": "Mumbai",
+      "pincode": "400076",
+      "coordinates": {
+        "latitude": 19.1334,
+        "longitude": 72.9133
+      }
+    },
+    "type": "government",
+    "streams": [
+      {
+        "name": "Computer Science and Engineering",
+        "code": "CSE",
+        "duration": 4,
+        "seats": 120,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 99.5, "rank": 63 },
+          { "year": 2023, "category": "obc", "cutoff": 98.8, "rank": 150 },
+          { "year": 2022, "category": "general", "cutoff": 99.6, "rank": 60 }
+        ]
+      },
+      {
+        "name": "Electrical Engineering", 
+        "code": "EE",
+        "duration": 4,
+        "seats": 100,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 99.2, "rank": 120 }
+        ]
+      }
+    ],
+    "fees": {
+      "tuition": 200000,
+      "hostel": 50000, 
+      "other": 30000,
+      "total": 280000
+    },
+    "rankings": {
+      "nirf": 3,
+      "worldRank": 172,
+      "categoryRank": 1,
+      "year": 2023
+    },
+    "facilities": ["Library", "Hostel", "Labs", "Sports Complex", "Cafeteria", "WiFi"],
+    "contact": {
+      "website": "https://www.iitb.ac.in",
+      "phone": "+91-22-2572-2545",
+      "email": "info@iitb.ac.in",
+      "address": "Powai, Mumbai, Maharashtra 400076"
+    },
+    "accreditation": {
+      "naac": "A++",
+      "nba": ["CSE", "EE", "ME"],
+      "other": ["ABET"]
+    },
+    "placements": {
+      "averagePackage": 1800000,
+      "highestPackage": 15000000, 
+      "placementPercentage": 95,
+      "topRecruiters": ["Google", "Microsoft", "Amazon", "Goldman Sachs"],
+      "year": 2023
+    },
+    "metadata": {
+      "dataSource": "Official Website",
+      "lastUpdated": "2024-01-15",
+      "verified": true,
+      "popularity": 1250
+    },
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/1/1f/IIT_Bombay_Main_Building.jpg",
+      "https://www.iitb.ac.in/sites/www.iitb.ac.in/themes/touchm/logo.png"
+    ]
+  },
+  {
+    "collegeId": "bits_pilani",
+    "name": "Birla Institute of Technology and Science, Pilani",
+    "location": {
+      "state": "Rajasthan",
+      "city": "Pilani", 
+      "district": "Jhunjhunu",
+      "pincode": "333031"
+    },
+    "type": "private",
+    "streams": [
+      {
+        "name": "Computer Science and Engineering",
+        "code": "CSE",
+        "duration": 4,
+        "seats": 150,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 98.5, "rank": 250 }
+        ]
+      },
+      {
+        "name": "Electronics and Communication",
+        "code": "ECE", 
+        "duration": 4,
+        "seats": 120,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 97.8, "rank": 380 }
+        ]
+      }
+    ],
+    "fees": {
+      "tuition": 450000,
+      "hostel": 80000,
+      "other": 50000,
+      "total": 580000
+    },
+    "rankings": {
+      "nirf": 24,
+      "worldRank": 801,
+      "year": 2023
+    },
+    "facilities": ["Library", "Hostel", "Labs", "Sports", "Cultural Center"],
+    "contact": {
+      "website": "https://www.bits-pilani.ac.in",
+      "phone": "+91-1596-242210"
+    },
+    "placements": {
+      "averagePackage": 1200000,
+      "highestPackage": 6000000,
+      "placementPercentage": 88,
+      "topRecruiters": ["TCS", "Infosys", "Wipro", "Adobe"]
+    },
+    "metadata": {
+      "verified": true,
+      "popularity": 980
+    },
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/f/fd/BITS_Pilani_Campus.jpg",
+      "https://www.bits-pilani.ac.in/wp-content/uploads/2021/07/bits-logo.png"
+    ]
+  },
+  {
+    "collegeId": "du_hansraj",
+    "name": "Hansraj College, University of Delhi",
+    "location": {
+      "state": "Delhi",
+      "city": "New Delhi",
+      "district": "North Delhi"
+    },
+    "type": "government", 
+    "streams": [
+      {
+        "name": "Computer Science",
+        "code": "CS",
+        "duration": 3,
+        "seats": 60,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 98.2, "rank": null }
+        ]
+      },
+      {
+        "name": "Economics", 
+        "code": "ECO",
+        "duration": 3,
+        "seats": 80,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 97.5, "rank": null }
+        ]
+      }
+    ],
+    "fees": {
+      "tuition": 15000,
+      "hostel": 0,
+      "other": 5000, 
+      "total": 20000
+    },
+    "rankings": {
+      "nirf": 12,
+      "categoryRank": 3,
+      "year": 2023
+    },
+    "facilities": ["Library", "Computer Lab", "Sports Ground", "Auditorium"],
+    "contact": {
+      "website": "http://hansrajcollege.ac.in",
+      "phone": "+91-11-2766-7800"
+    },
+    "placements": {
+      "averagePackage": 800000,
+      "placementPercentage": 75
+    },
+    "metadata": {
+      "verified": true,
+      "popularity": 850
+    },
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/5/5d/Hansraj_College.jpg",
+      "http://hansrajcollege.ac.in/assets/front/images/logo.png"
+    ]
+  },
+  {
+    "collegeId": "vit_vellore",
+    "name": "Vellore Institute of Technology",
+    "location": {
+      "state": "Tamil Nadu",
+      "city": "Vellore",
+      "district": "Vellore"
+    },
+    "type": "private",
+    "streams": [
+      {
+        "name": "Computer Science and Engineering",
+        "code": "CSE",
+        "duration": 4,
+        "seats": 600,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 95.5, "rank": 500 }
+        ]
+      },
+      {
+        "name": "Information Technology",
+        "code": "IT",
+        "duration": 4, 
+        "seats": 300,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 94.2, "rank": 700 }
+        ]
+      }
+    ],
+    "fees": {
+      "tuition": 400000,
+      "hostel": 60000,
+      "other": 40000,
+      "total": 500000
+    },
+    "rankings": {
+      "nirf": 15,
+      "worldRank": 601,
+      "year": 2023
+    },
+    "facilities": ["Library", "Hostel", "Labs", "Hospital", "Sports Complex"],
+    "contact": {
+      "website": "https://vit.ac.in",
+      "phone": "+91-416-220-2020"
+    },
+    "placements": {
+      "averagePackage": 1000000,
+      "highestPackage": 4500000,
+      "placementPercentage": 85,
+      "topRecruiters": ["Accenture", "Cognizant", "HCL", "Tech Mahindra"]
+    },
+    "metadata": {
+      "verified": true,
+      "popularity": 1100
+    },
+    "images": [
+      "https://vit.ac.in/sites/default/files/2020-05/vit-vellore-campus.jpg",
+      "https://vit.ac.in/sites/default/files/vitlogo.png"
+    ]
+  },
+  {
+    "collegeId": "nit_trichy",
+    "name": "National Institute of Technology Tiruchirappalli",
+    "location": {
+      "state": "Tamil Nadu",
+      "city": "Tiruchirappalli",
+      "district": "Tiruchirappalli"
+    },
+    "type": "government",
+    "streams": [
+      {
+        "name": "Computer Science and Engineering", 
+        "code": "CSE",
+        "duration": 4,
+        "seats": 110,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 98.8, "rank": 180 }
+        ]
+      },
+      {
+        "name": "Electronics and Communication",
+        "code": "ECE",
+        "duration": 4,
+        "seats": 100,
+        "cutoffs": [
+          { "year": 2023, "category": "general", "cutoff": 98.2, "rank": 280 }
+        ]
+      }
+    ],
+    "fees": {
+      "tuition": 180000,
+      "hostel": 45000,
+      "other": 25000,
+      "total": 250000
+    },
+    "rankings": {
+      "nirf": 9,
+      "categoryRank": 2,
+      "year": 2023
+    },
+    "facilities": ["Central Library", "Hostels", "Research Labs", "Sports Complex"],
+    "contact": {
+      "website": "https://www.nitt.edu",
+      "phone": "+91-431-250-3000"
+    },
+    "placements": {
+      "averagePackage": 1400000,
+      "highestPackage": 8500000,
+      "placementPercentage": 92
+    },
+    "metadata": {
+      "verified": true,
+      "popularity": 920
+    },
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/0/04/NIT_Trichy_Main_Building.jpg",
+      "https://www.nitt.edu/home/NITT-logo.png"
+    ]
+  }
+]

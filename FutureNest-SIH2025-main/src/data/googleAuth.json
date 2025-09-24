@@ -1,0 +1,9 @@
+{
+  "users": [],
+  "authConfig": {
+    "provider": "google",
+    "clientId": "your-google-client-id",
+    "redirectUri": "http://localhost:3000/auth/google/callback",
+    "scopes": ["profile", "email"]
+  }
+}

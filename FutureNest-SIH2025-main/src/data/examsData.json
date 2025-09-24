@@ -1,0 +1,149 @@
+{
+  "examCategories": [
+    {
+      "categoryName": "Public Sector / Government Exams",
+      "description": "Exams conducted for recruitment into government services and admission to public universities.",
+      "subCategories": [
+        {
+          "subCategoryName": "Civil Services",
+          "exams": [
+            {
+              "name": "Civil Services Examination",
+              "abbreviation": "UPSC CSE",
+              "conductingBody": "Union Public Service Commission",
+              "purpose": "Recruitment for top central government services.",
+              "rolesOrCourses": ["Indian Administrative Service (IAS)", "Indian Police Service (IPS)", "Indian Foreign Service (IFS)"]
+            },
+            {
+              "name": "State Public Service Commission Exam",
+              "abbreviation": "State PSC",
+              "conductingBody": "State Public Service Commissions (e.g., JKPSC)",
+              "purpose": "Recruitment for state-level administrative services.",
+              "rolesOrCourses": ["State Administrative Services", "State Police Services", "Tehsildar"]
+            }
+          ]
+        },
+        {
+          "subCategoryName": "Banking",
+          "exams": [
+            {
+              "name": "IBPS PO Examination",
+              "abbreviation": "IBPS PO",
+              "conductingBody": "Institute of Banking Personnel Selection",
+              "purpose": "Recruitment of Probationary Officers in participating public sector banks.",
+              "rolesOrCourses": ["Probationary Officer (PO)", "Bank Manager"]
+            },
+            {
+              "name": "SBI PO Examination",
+              "abbreviation": "SBI PO",
+              "conductingBody": "State Bank of India",
+              "purpose": "Recruitment of Probationary Officers in State Bank of India.",
+              "rolesOrCourses": ["Probationary Officer (PO)"]
+            },
+            {
+              "name": "RBI Grade B Officer Exam",
+              "abbreviation": "RBI Grade B",
+              "conductingBody": "Reserve Bank of India",
+              "purpose": "Recruitment for Grade B officer positions in the RBI.",
+              "rolesOrCourses": ["Manager (Grade B) in RBI"]
+            }
+          ]
+        },
+        {
+          "subCategoryName": "Defence",
+          "exams": [
+            {
+              "name": "Combined Defence Services Examination",
+              "abbreviation": "CDS",
+              "conductingBody": "Union Public Service Commission",
+              "purpose": "Recruitment for the Indian Military Academy, Officers Training Academy, Indian Naval Academy, and Indian Air Force Academy.",
+              "rolesOrCourses": ["Army Officer", "Navy Officer", "Air Force Officer"]
+            },
+            {
+              "name": "National Defence Academy Examination",
+              "abbreviation": "NDA",
+              "conductingBody": "Union Public Service Commission",
+              "purpose": "Admission to the Army, Navy, and Air Force wings of the NDA.",
+              "rolesOrCourses": ["Cadet Training for Defence Forces"]
+            }
+          ]
+        },
+        {
+          "subCategoryName": "Engineering (Public Sector)",
+          "exams": [
+            {
+              "name": "Graduate Aptitude Test in Engineering",
+              "abbreviation": "GATE",
+              "conductingBody": "IITs and IISc",
+              "purpose": "Admission to M.Tech programs in IITs/NITs and recruitment in Public Sector Undertakings (PSUs).",
+              "rolesOrCourses": ["M.Tech Programs", "Jobs in PSUs like ONGC, BHEL, NTPC"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "categoryName": "Private Sector & Higher Education Entrance Exams",
+      "description": "Exams for admission to private universities and specialized postgraduate programs.",
+      "subCategories": [
+        {
+          "subCategoryName": "Management",
+          "exams": [
+            {
+              "name": "Common Admission Test",
+              "abbreviation": "CAT",
+              "conductingBody": "Indian Institutes of Management (IIMs)",
+              "purpose": "Admission to MBA and other postgraduate management programs in IIMs and other top B-schools.",
+              "rolesOrCourses": ["Master of Business Administration (MBA)"]
+            },
+            {
+              "name": "Xavier Aptitude Test",
+              "abbreviation": "XAT",
+              "conductingBody": "XLRI Jamshedpur",
+              "purpose": "Admission to MBA programs at XLRI and over 160 other B-schools.",
+              "rolesOrCourses": ["Master of Business Administration (MBA)"]
+            }
+          ]
+        },
+        {
+          "subCategoryName": "Engineering (Private & Deemed Universities)",
+          "exams": [
+            {
+              "name": "Joint Entrance Examination Main",
+              "abbreviation": "JEE Main",
+              "conductingBody": "National Testing Agency (NTA)",
+              "purpose": "Admission to undergraduate engineering programs (B.E/B.Tech) in NITs, IIITs, and other centrally funded technical institutions. Also a qualifier for JEE Advanced.",
+              "rolesOrCourses": ["B.Tech/B.E. Programs"]
+            },
+            {
+              "name": "Joint Entrance Examination Advanced",
+              "abbreviation": "JEE Advanced",
+              "conductingBody": "Indian Institutes of Technology (IITs)",
+              "purpose": "Admission to undergraduate engineering programs (B.E/B.Tech) in the Indian Institutes of Technology (IITs).",
+              "rolesOrCourses": ["B.Tech/B.E. at IITs"]
+            },
+            {
+              "name": "Birla Institute of Technology and Science Admission Test",
+              "abbreviation": "BITSAT",
+              "conductingBody": "BITS Pilani",
+              "purpose": "Admission to integrated first-degree programs at BITS Pilani campuses.",
+              "rolesOrCourses": ["B.E., B.Pharm, M.Sc. programs at BITS"]
+            }
+          ]
+        },
+        {
+          "subCategoryName": "Medical (Private & Govt.)",
+          "exams": [
+            {
+              "name": "National Eligibility cum Entrance Test",
+              "abbreviation": "NEET-UG",
+              "conductingBody": "National Testing Agency (NTA)",
+              "purpose": "Admission to MBBS, BDS, and other undergraduate medical courses in government and private medical colleges in India.",
+              "rolesOrCourses": ["MBBS", "BDS", "AYUSH courses"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

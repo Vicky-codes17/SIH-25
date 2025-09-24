@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Roadmaps (React)</title>
+    <style>
+        :root {
+            --bg: #0b0c10;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #6b7280;
+            --brand: #0ea5e9;
+            --brand-strong: #0284c7;
+            --accent: #f59e0b;
+            --pill: #f1f5f9;
+            --pill-active: #e0f2fe;
+            --border: #e5e7eb;
+            --shadow: 0 10px 25px rgba(2,8,23,0.08);
+            --radius: 14px;
+        }
+        html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; color: var(--text); background: linear-gradient(120deg, #eef2ff, #f8fafc, #e0f2fe); background-size: 200% 200%; animation: gradientShift 12s ease infinite; }
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .container { display: grid; place-items: center; min-height: 100vh; padding: 20px; }
+        .card { width: min(1000px, 92vw); background: rgba(255,255,255,0.82); border: 1px solid rgba(2,8,23,0.06); border-radius: var(--radius); box-shadow: 0 20px 40px rgba(2,8,23,0.12); overflow: hidden; backdrop-filter: saturate(1.2) blur(8px); position: relative; }
+        .aurora { position: absolute; inset: -20% -10% -10% -10%; pointer-events: none; z-index: 0; overflow: hidden; filter: blur(40px) saturate(1.2); }
+        .aurora span { position: absolute; width: 40vmax; height: 40vmax; border-radius: 50%; opacity: 0.22; mix-blend-mode: screen; transform: translate(-50%, -50%); animation: float 18s ease-in-out infinite; }
+        .aurora .a1 { background: #60a5fa; top: 10%; left: 15%; animation-delay: 0s; }
+        .aurora .a2 { background: #22d3ee; top: 30%; left: 85%; animation-delay: 4s; }
+        .aurora .a3 { background: #f472b6; top: 90%; left: 30%; animation-delay: 8s; }
+        .aurora .a4 { background: #fde68a; top: 60%; left: 60%; animation-delay: 12s; }
+        @keyframes float { 0%,100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.15); } }
+        .header { padding: 32px 28px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 40%, #22d3ee 100%); background-size: 200% 200%; animation: headerSheen 10s ease infinite; color: white; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; position: relative; z-index: 1; }
+        @keyframes headerSheen { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .title { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(90deg, #fff, #e0f2fe, #fff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 2px 14px rgba(255,255,255,0.25); }
+        .header-subtitle { width: 100%; margin: -2px 0 0 0; font-size: 13px; opacity: 0.9; }
+        .toggle { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); padding: 8px 12px; border-radius: 999px; backdrop-filter: blur(6px); transition: transform 0.2s ease; }
+        .toggle:active { transform: scale(0.98); }
+        .toggle-label { font-weight: 700; font-size: 14px; }
+        .switch { position: relative; width: 56px; height: 30px; background: rgba(255,255,255,0.6); border-radius: 999px; border: 1px solid rgba(255,255,255,0.8); cursor: pointer; transition: background 0.2s ease, box-shadow 0.2s ease; box-shadow: inset 0 2px 6px rgba(2,8,23,0.12); }
+        .switch.on { background: linear-gradient(90deg, #bae6fd, #dbeafe); box-shadow: 0 0 0 3px rgba(14,165,233,0.18), 0 0 24px rgba(14,165,233,0.35); }
+        .knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: linear-gradient(180deg, #fff, #e2e8f0); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.2s ease; }
+        .switch.on .knob { transform: translateX(26px); }
+        .content { padding: 22px; }
+        .layout { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+        .course { background: linear-gradient(180deg, #ffffff, #f8fafc); border: 1px solid var(--border); border-radius: 14px; padding: 14px; cursor: pointer; transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease, border-color 0.2s ease; transform-style: preserve-3d; position: relative; }
+        .course:hover { transform: translateY(-3px) perspective(700px) rotateX(1.5deg) rotateY(-1.5deg); box-shadow: 0 10px 20px rgba(2,8,23,0.10); border-color: #c7d2fe; }
+        .course-icon { font-size: 20px; line-height: 1; margin-right: 8px; }
+        .course-title { font-size: 16px; font-weight: 700; margin: 0 0 8px 0; display: flex; align-items: center; }
+        .course-desc { font-size: 13px; color: var(--muted); margin: 0; }
+        .tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .badge { padding: 4px 8px; font-size: 11px; font-weight: 700; border-radius: 999px; border: 1px solid #e2e8f0; background: linear-gradient(180deg, #f8fafc, #ffffff); color: #0f172a; }
+        .panel { background: rgba(255,255,255,0.9); border: 1px solid rgba(2,8,23,0.06); border-radius: 14px; padding: 18px; box-shadow: 0 12px 24px rgba(2,8,23,0.08); backdrop-filter: blur(6px); }
+        .panel-title { font-size: 18px; font-weight: 800; margin: 0 0 12px 0; }
+        .steps { list-style: none; padding: 0; margin: 0; }
+        .step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 12px 0; border-bottom: 1px dashed var(--border); }
+        .step:last-child { border-bottom: none; }
+        .step-index { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #e0f2fe, #bfdbfe); color: #0c4a6e; display: grid; place-items: center; font-weight: 900; font-size: 13px; box-shadow: 0 2px 6px rgba(2,8,23,0.12); }
+        .resources { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+        .resource { background: linear-gradient(180deg, #ffffff, #f8fafc); border: 1px solid var(--border); border-radius: 12px; padding: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .resource:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(2,8,23,0.08); }
+        .resource a { color: var(--brand-strong); text-decoration: none; font-weight: 800; }
+        .resource p { margin: 6px 0 0 0; font-size: 12px; color: var(--muted); }
+        .muted { color: var(--muted); }
+        @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const COURSES = [
+            { id: 'web-dev', title: 'Full-Stack Web Development', desc: 'HTML, CSS, JavaScript, APIs, Databases', icon: '💻', tags: ['Frontend', 'Backend', 'APIs'], steps: ['Learn HTML & semantic structure','Style with modern CSS (Flexbox/Grid)','JavaScript fundamentals (ES6+)','Build REST APIs and handle JSON','Learn a frontend framework (React/Vue)','Databases and basic SQL/NoSQL','Capstone project: deploy a full-stack app'], resources: [{ name: 'MDN Web Docs', url: 'https://developer.mozilla.org/en-US/docs/Learn', note: 'Free tutorials from basics to advanced' },{ name: 'FreeCodeCamp', url: 'https://www.freecodecamp.org/learn/2022/responsive-web-design/', note: 'Interactive coding challenges' },{ name: 'The Odin Project', url: 'https://www.theodinproject.com/paths/full-stack-javascript', note: 'Complete curriculum with projects' }] },
+            { id: 'data-science', title: 'Data Science Foundations', desc: 'Python, Pandas, Visualization, Statistics', icon: '📊', tags: ['Python','Pandas','Viz'], steps: ['Python basics and notebooks','Data wrangling with Pandas','Exploratory data analysis & viz','Intro statistics and probability','Modeling basics (regression/classification)','Communicate insights & dashboards'], resources: [{ name: 'Kaggle Learn', url: 'https://www.kaggle.com/learn/intro-to-programming', note: 'Start with Python basics' },{ name: 'Pandas Tutorial', url: 'https://pandas.pydata.org/docs/getting_started/intro_tutorials/', note: 'Official getting started guide' },{ name: 'StatQuest YouTube', url: 'https://www.youtube.com/playlist?list=PLblh5JKOoLUICTaGLRoHQDuF_7q2GfuJF', note: 'Statistics explained simply' }] },
+            { id: 'ui-ux', title: 'UI/UX Design Starter', desc: 'Design principles, Figma, Accessibility', icon: '🎨', tags: ['Figma','UX','Accessibility'], steps: ['Visual design principles & typography','User research fundamentals','Wireframing and prototyping','Design systems basics','Accessibility best practices','Portfolio mini-project'], resources: [{ name: 'Material Design', url: 'https://m3.material.io/foundations', note: 'Design system principles' },{ name: 'Figma Tutorials', url: 'https://www.figma.com/resources/learn-design/', note: 'Free Figma learning path' },{ name: 'WebAIM', url: 'https://webaim.org/articles/', note: 'Accessibility best practices' }] },
+            { id: 'cloud', title: 'Cloud & DevOps Basics', desc: 'Linux, Git, Cloud, CI/CD', icon: '☁️', tags: ['Linux','Docker','CI/CD'], steps: ['Linux and shell fundamentals','Version control with Git & GitHub','Cloud basics (compute, storage, IAM)','Containers & Docker basics','CI/CD overview and pipelines','Deploy a simple app to the cloud'], resources: [{ name: 'AWS Free Tier', url: 'https://aws.amazon.com/free/', note: 'Free cloud resources to practice' },{ name: 'Docker Tutorial', url: 'https://docs.docker.com/get-started/', note: 'Hands-on container basics' },{ name: 'Git Handbook', url: 'https://guides.github.com/introduction/git-handbook/', note: 'Git essentials guide' }] },
+            { id: 'cybersec', title: 'Cybersecurity Fundamentals', desc: 'Networking, Threats, Security Basics', icon: '🛡️', tags: ['Networking','OWASP','CTF'], steps: ['Networking basics (TCP/IP, OSI model)','Common threats (phishing, malware, OWASP Top 10)','System hardening and least privilege','Web app security fundamentals','Intro to monitoring and incident response','Hands-on labs and CTF practice'], resources: [{ name: 'OWASP Top 10', url: 'https://owasp.org/www-project-top-ten/', note: 'Critical web vulnerabilities' },{ name: 'TryHackMe Free', url: 'https://tryhackme.com/paths', note: 'Free cybersecurity labs' },{ name: 'Cisco Networking Academy', url: 'https://www.netacad.com/courses/networking', note: 'Free networking course' }] },
+            { id: 'mobile-dev', title: 'Mobile App Development', desc: 'Kotlin/Swift or Cross‑platform (Flutter/React Native)', icon: '📱', tags: ['Android','iOS','Flutter'], steps: ['Choose platform: native vs cross‑platform','Language basics (Kotlin/Swift/Dart/JS)','UI layouts and navigation patterns','State management and local storage','Networking and offline sync','Publish a simple app to a store or as APK/IPA'], resources: [{ name: 'Flutter Codelabs', url: 'https://codelabs.developers.google.com/?cat=Flutter', note: 'Step-by-step Flutter tutorials' },{ name: 'React Native Tutorial', url: 'https://reactnative.dev/docs/tutorial', note: 'Official getting started guide' },{ name: 'Android Developer Guide', url: 'https://developer.android.com/courses/android-basics-kotlin/course', note: 'Free Kotlin course' }] },
+            { id: 'ai-ml', title: 'AI/ML Starter', desc: 'Python, NumPy, ML basics, Ethics', icon: '🤖', tags: ['ML','NumPy','Ethics'], steps: ['Python, NumPy, and data handling','Supervised learning (regression/classification)','Model evaluation and overfitting','Intro to neural networks and embeddings','Responsible AI and bias awareness','Mini project with a real dataset'], resources: [{ name: 'scikit-learn Tutorials', url: 'https://scikit-learn.org/stable/tutorial/index.html', note: 'Machine learning with Python' },{ name: 'Google ML Course', url: 'https://developers.google.com/machine-learning/crash-course', note: 'Free ML fundamentals' },{ name: 'Fast.ai Course', url: 'https://course.fast.ai/', note: 'Practical deep learning' }] },
+            { id: 'product-mgmt', title: 'Product Management Basics', desc: 'Discovery, Prioritization, Roadmaps, Delivery', icon: '🧭', tags: ['Discovery','PRD','Roadmaps'], steps: ['Customer discovery and problem validation','Define outcomes and success metrics','Prioritization frameworks (RICE/MoSCoW)','Write succinct PRDs and user stories','Roadmapping and stakeholder alignment','Launch, measure, iterate'], resources: [{ name: 'SVPG Resources', url: 'https://www.svpg.com/articles/', note: 'Product strategy articles' },{ name: 'Atlassian Agile', url: 'https://www.atlassian.com/agile', note: 'Agile methodology guide' },{ name: 'Product School', url: 'https://productschool.com/blog/', note: 'Free PM resources' }] },
+            { id: 'digital-mktg', title: 'Digital Marketing Essentials', desc: 'SEO, Content, Ads, Analytics', icon: '📣', tags: ['SEO','Content','Analytics'], steps: ['Define audience and value proposition','SEO fundamentals and keyword research','Create content and landing pages','Run basic ad campaigns (search/social)','Measure with analytics and iterate','Build an email list and nurture flows'], resources: [{ name: 'Marketing Basics Guide', url: './resources/marketing-basics.html', note: 'Local marketing fundamentals' },{ name: 'SEO Checklist', url: './resources/seo-checklist.html', note: 'Step-by-step SEO guide' },{ name: 'Analytics Setup', url: './resources/analytics-setup.html', note: 'Google Analytics tutorial' }] },
+            { id: 'game-dev', title: 'Game Development', desc: 'Unity, C#, Game Design, 2D/3D', icon: '🎮', tags: ['Unity','C#','Game Design'], steps: ['Learn Unity basics and interface','C# scripting fundamentals','Game design principles','2D sprite animation and physics','3D modeling and lighting','Publish your first game'], resources: [{ name: 'Unity Tutorials', url: './resources/unity-tutorials.html', note: 'Local Unity learning path' },{ name: 'C# Game Scripting', url: './resources/csharp-games.html', note: 'Game programming basics' },{ name: 'Game Design Principles', url: './resources/game-design.html', note: 'Core game design concepts' }] },
+            
+
+        ];
+
+        function CourseCard({ course, onSelect }) {
+            return (
+                <div className="course" onClick={() => onSelect(course)}>
+                    <h4 className="course-title">
+                        {course.icon ? <span className="course-icon">{course.icon}</span> : null}
+                        {course.title}
+                    </h4>
+                    <p className="course-desc">{course.desc}</p>
+                    <div className="tags">
+                        {(course.tags || []).map(tag => (
+                            <span className="badge" key={tag}>{tag}</span>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function DetailPanel({ course }) {
+            if (!course) {
+                return (
+                    <div className="panel">
+                        <h3 className="panel-title">Select a course to view the roadmap</h3>
+                        <div className="muted">No course selected.</div>
+                    </div>
+                );
+            }
+            return (
+                <div className="panel">
+                    <h3 className="panel-title">{course.title}</h3>
+                    <div style={{ marginBottom: 14 }} className="muted">Follow these steps and use the resources below.</div>
+                    <ul className="steps">
+                        {course.steps.map((step, idx) => (
+                            <li className="step" key={idx}>
+                                <div className="step-index">{idx + 1}</div>
+                                <div>{step}</div>
+                            </li>
+                        ))}
+                    </ul>
+                    <div style={{ height: 14 }} />
+                    <div className="panel-title" style={{ fontSize: 16, margin: '0 0 8px 0' }}>Resources</div>
+                    <div className="resources">
+                        {course.resources.map(r => (
+                            <div className="resource" key={r.url}>
+                                <a href={r.url} target="_blank" rel="noopener noreferrer">{r.name}</a>
+                                <p>{r.note}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function SmartRoadmaps() {
+            const [enabled, setEnabled] = React.useState(false);
+            const [selected, setSelected] = React.useState(null);
+            const toggle = () => setEnabled(v => !v);
+            const onSelect = (c) => setSelected(c);
+
+            return (
+                <div className="container">
+                    <div className="card">
+                        <div className="aurora" aria-hidden="true">
+                            <span className="a1"></span>
+                            <span className="a2"></span>
+                            <span className="a3"></span>
+                            <span className="a4"></span>
+                        </div>
+                        <div className="header">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', width: '100%' }}>
+                                <button 
+                                    onClick={() => window.location.href = '/dashboard'} 
+                                    style={{
+                                        background: 'rgba(255,255,255,0.2)',
+                                        border: '1px solid rgba(255,255,255,0.3)',
+                                        borderRadius: '8px',
+                                        color: 'white',
+                                        padding: '8px 16px',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        transition: 'all 0.2s ease',
+                                        backdropFilter: 'blur(6px)'
+                                    }}
+                                    onMouseOver={(e) => e.target.style.background = 'rgba(255,255,255,0.3)'}
+                                    onMouseOut={(e) => e.target.style.background = 'rgba(255,255,255,0.2)'}
+                                >
+                                    ← Back to Dashboard
+                                </button>
+                                <div style={{ flex: 1 }}>
+                                    <h1 className="title">Smart Roadmaps</h1>
+                                    <p className="header-subtitle">Explore curated learning paths with steps and resources</p>
+                                </div>
+                            </div>
+                            <div className="toggle" role="button" aria-pressed={enabled} onClick={toggle}>
+                                <span className="toggle-label">Smart Roadmaps</span>
+                                <div className={"switch" + (enabled ? " on" : "") } aria-hidden="true">
+                                    <div className="knob"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="content">
+                            <div className="layout">
+                                <div>
+                                    <div style={{ marginBottom: 10 }} className="muted">Toggle to explore curated courses</div>
+                                    <div className="grid" style={{ display: enabled ? 'grid' : 'none' }}>
+                                        {COURSES.map(c => (
+                                            <CourseCard key={c.id} course={c} onSelect={onSelect} />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <DetailPanel course={selected} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SmartRoadmaps />);
+    </script>
+</body>
+</html>
+
+

@@ -1,0 +1,60 @@
+{
+  "fieldsOfStudy": [
+    {
+      "id": "ENG",
+      "fieldName": "Engineering & Technology",
+      "description": "Focuses on the application of scientific principles to design, build, and maintain structures, machines, and systems.",
+      "icon": "Cpu",
+      "courses": [
+        {
+          "courseName": "Bachelor of Technology (B.Tech)",
+          "abbreviation": "B.Tech",
+          "duration": "4 Years",
+          "description": "A comprehensive undergraduate degree in various engineering disciplines.",
+          "eligibility": "10+2 with Physics, Chemistry, and Mathematics (PCM).",
+          "careerPaths": ["Software Engineer", "Mechanical Engineer", "Civil Engineer", "Electrical Engineer", "Data Scientist"]
+        },
+        {
+          "courseName": "Bachelor of Engineering (B.E.)",
+          "abbreviation": "B.E.",
+          "duration": "4 Years",
+          "description": "Similar to B.Tech, with a stronger emphasis on theoretical knowledge.",
+          "eligibility": "10+2 with Physics, Chemistry, and Mathematics (PCM).",
+          "careerPaths": ["Systems Analyst", "Electronics Engineer", "Production Engineer", "Research Scientist"]
+        },
+        {
+          "courseName": "Bachelor of Architecture (B.Arch)",
+          "abbreviation": "B.Arch",
+          "duration": "5 Years",
+          "description": "Focuses on the art and science of designing buildings and structures.",
+          "eligibility": "10+2 with Mathematics. NATA or JEE Main Paper 2 score required.",
+          "careerPaths": ["Architect", "Urban Planner", "Interior Designer", "Landscape Architect"]
+        }
+      ]
+    },
+    {
+      "id": "MED",
+      "fieldName": "Medical & Health Sciences",
+      "description": "Deals with health and the science of preventing and curing diseases.",
+      "icon": "Stethoscope",
+      "courses": [
+        {
+          "courseName": "Bachelor of Medicine, Bachelor of Surgery (MBBS)",
+          "abbreviation": "MBBS",
+          "duration": "5.5 Years",
+          "description": "The foundational undergraduate degree for becoming a medical doctor.",
+          "eligibility": "10+2 with Physics, Chemistry, and Biology (PCB). NEET score required.",
+          "careerPaths": ["General Physician", "Surgeon", "Specialist Doctor (Cardiologist, etc.)", "Medical Professor"]
+        },
+        {
+          "courseName": "Bachelor of Dental Surgery (BDS)",
+          "abbreviation": "BDS",
+          "duration": "5 Years",
+          "description": "The foundational undergraduate degree for becoming a dentist.",
+          "eligibility": "10+2 with Physics, Chemistry, and Biology (PCB). NEET score required.",
+          "careerPaths": ["Dentist", "Orthodontist", "Oral Surgeon", "Dental Hygienist"]
+        }
+      ]
+    }
+  ]
+}
