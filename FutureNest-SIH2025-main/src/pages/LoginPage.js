@@ -1,66 +1,103 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Chrome, Github, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Chrome, Github, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { handleGoogleAuth, handleGitHubAuth } from '../utils/authUtils';
+import { useDummyAuth } from '../contexts/DummyAuthContext';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  
+  const { login, signInWithGoogle, signInWithGithub } = useDummyAuth();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    window.location.href = "/student-info";
-  };
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
 
-  const handleSocialLogin = (provider) => {
-    window.location.href = "/student-info";
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      await login(email, password);
+      handleSuccessfulAuth();
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError(getFirebaseErrorMessage(error.code));
+    }
+    setIsLoading(false);
   };
 
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
+    setError('');
+    
     try {
-      const user = await handleGoogleAuth();
-      if (user) {
-        console.log('Google login successful:', user);
-        handleSuccessfulAuth();
-      }
+      await signInWithGoogle();
+      handleSuccessfulAuth();
     } catch (error) {
       console.error('Google login failed:', error);
+      setError(getFirebaseErrorMessage(error.code));
     }
     setIsGoogleLoading(false);
   };
 
   const handleGitHubLogin = async () => {
     setIsGitHubLoading(true);
+    setError('');
+    
     try {
-      const user = await handleGitHubAuth();
-      if (user) {
-        console.log('GitHub login successful:', user);
-        handleSuccessfulAuth();
-      }
+      await signInWithGithub();
+      handleSuccessfulAuth();
     } catch (error) {
       console.error('GitHub login failed:', error);
+      setError(getFirebaseErrorMessage(error.code));
     }
     setIsGitHubLoading(false);
   };
 
   const handleSuccessfulAuth = () => {
-    // Your existing auth logic...
+    // Set legacy localStorage for existing components
     localStorage.setItem('isAuthenticated', 'true');
     localStorage.setItem('user_logged_in', 'true');
     
-    // Dispatch multiple events to ensure chatbot catches the authentication
+    // Dispatch events for chatbot compatibility
     window.dispatchEvent(new Event('authStateChanged'));
     window.dispatchEvent(new Event('userLoggedIn'));
     window.dispatchEvent(new Event('loginSuccess'));
     
     // Navigate to dashboard
     navigate('/dashboard');
+  };
+
+  const getFirebaseErrorMessage = (errorCode) => {
+    switch (errorCode) {
+      case 'auth/user-not-found':
+        return 'No account found with this email address.';
+      case 'auth/wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'auth/invalid-email':
+        return 'Invalid email address format.';
+      case 'auth/user-disabled':
+        return 'This account has been disabled.';
+      case 'auth/too-many-requests':
+        return 'Too many failed login attempts. Please try again later.';
+      case 'auth/popup-closed-by-user':
+        return 'Sign-in was cancelled.';
+      case 'auth/popup-blocked':
+        return 'Pop-up blocked. Please allow pop-ups and try again.';
+      default:
+        return 'An error occurred during sign-in. Please try again.';
+    }
   };
 
   return (
@@ -87,21 +124,53 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center text-red-700"
+            >
+              <AlertCircle className="w-5 h-5 mr-3 flex-shrink-0" />
+              <span className="text-sm">{error}</span>
+            </motion.div>
+          )}
+
           {/* Social Login Buttons */}
           <div className="space-y-3 mb-6">
             <button
               onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              disabled={isGoogleLoading || isGitHubLoading}
+              className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Chrome className="w-5 h-5 mr-3 text-red-500" />
-              <span className="text-slate-700">{isGoogleLoading ? 'Loading...' : 'Continue with Google'}</span>
+              <span className="text-slate-700">
+                {isGoogleLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-500 mr-2"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  'Continue with Google'
+                )}
+              </span>
             </button>
             <button
               onClick={handleGitHubLogin}
-              className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+              disabled={isGoogleLoading || isGitHubLoading}
+              className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Github className="w-5 h-5 mr-3 text-slate-800" />
-              <span className="text-slate-700">{isGitHubLoading ? 'Loading...' : 'Continue with GitHub'}</span>
+              <span className="text-slate-700">
+                {isGitHubLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-800 mr-2"></div>
+                    Signing in...
+                  </div>
+                ) : (
+                  'Continue with GitHub'
+                )}
+              </span>
             </button>
           </div>
 
@@ -166,12 +235,22 @@ export default function LoginPage() {
 
             <motion.button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              disabled={isLoading || isGoogleLoading || isGitHubLoading}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              whileHover={{ scale: isLoading ? 1 : 1.02 }}
+              whileTap={{ scale: isLoading ? 1 : 0.98 }}
             >
-              Sign In
-              <ArrowRight className="w-5 h-5 ml-2" />
+              {isLoading ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Signing In...
+                </div>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </>
+              )}
             </motion.button>
           </form>
 

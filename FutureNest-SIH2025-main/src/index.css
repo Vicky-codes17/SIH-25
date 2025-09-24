@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --futurenest-purple: #6b53f4;
+  --futurenest-blue: #4a35b3;
+  --futurenest-light-purple: #eef2ff;
+  --futurenest-accent-green: #10b981;
+  --futurenest-accent-yellow: #f59e0b;
+  --futurenest-accent-pink: #ec4899;
+  --futurenest-accent-orange: #f97316;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,4 +19,52 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* FutureNest Profile Styles */
+.gradient-futurenest {
+  background: linear-gradient(135deg, #6b53f4 0%, #4a35b3 100%);
+}
+
+/* Custom scrollbar for FutureNest profile */
+.futurenest-profile ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.futurenest-profile ::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+.futurenest-profile ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #6b53f4, #4a35b3);
+  border-radius: 4px;
+}
+
+.futurenest-profile ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5b45e4, #3a25a3);
+}
+
+.futurenest-profile ::selection {
+  background: rgba(107, 83, 244, 0.3);
+  color: white;
+}
+
+/* Animation classes for FutureNest profile */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.5s ease-out 0.2s both;
 }

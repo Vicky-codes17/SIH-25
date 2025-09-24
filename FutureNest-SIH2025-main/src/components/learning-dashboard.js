@@ -26,6 +26,7 @@ import { EbooksList } from "./EbooksList"
 import { CoursesList } from "./CoursesList"
 import { ExamsList } from "./ExamsList"
 import { Footer } from "./Footer"
+import { useDummyAuth } from "../contexts/DummyAuthContext"
 
 const dashboardSections = [
   {
@@ -91,6 +92,8 @@ export function LearningDashboard() {
   const [showExamsList, setShowExamsList] = useState(false)
   const [navigationHistory, setNavigationHistory] = useState([])
   const dropdownRef = useRef(null)
+  
+  const { currentUser, logout } = useDummyAuth()
 
   // Prevent back navigation to login/auth pages
   useEffect(() => {
