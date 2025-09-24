@@ -185,8 +185,8 @@ This project is created for **Smart India Hackathon 2025**. All rights reserved.
 
 ## 📧 Contact
 
-- **GitHub**: [@Vicky-codes17](https://github.com/Vicky-codes17)
-- **Email**: rameshvignesh0706@gmail.com
+- **GitHub**: 
+- **Email**: 
 
 ---
 
