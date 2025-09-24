@@ -87,15 +87,12 @@ npm run team-setup
 ## 🛠️ Available Commands
 
 ```bash
-npm start          # Development server (hot-reload)
-npm run build      # Build for production  
-npm run serve      # Build + serve production
-npm run team-setup # One-command setup
-npm test           # Run tests
+npm start      
+npm run build    
+npm run serve      
+npm run team-setup 
+npm test           
 ```
 
 ## 🎉 That's It!
 
-**No Docker needed!** Your team can run the app with just Node.js installed.
-
-**Questions?** Just run `npm start` and go to http://localhost:3000
