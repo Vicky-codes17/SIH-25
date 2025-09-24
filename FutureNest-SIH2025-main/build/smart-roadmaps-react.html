@@ -34,16 +34,6 @@
         @keyframes headerSheen { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .title { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.02em; background: linear-gradient(90deg, #fff, #e0f2fe, #fff); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 2px 14px rgba(255,255,255,0.25); }
         .header-subtitle { width: 100%; margin: -2px 0 0 0; font-size: 13px; opacity: 0.9; }
-        .toggle { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.35); padding: 8px 12px; border-radius: 999px; backdrop-filter: blur(6px); transition: transform 0.2s ease; }
-        .toggle:active { transform: scale(0.98); }
-        .toggle-label { font-weight: 700; font-size: 14px; }
-        .switch { position: relative; width: 56px; height: 30px; background: rgba(255,255,255,0.6); border-radius: 999px; border: 1px solid rgba(255,255,255,0.8); cursor: pointer; transition: background 0.2s ease, box-shadow 0.2s ease; box-shadow: inset 0 2px 6px rgba(2,8,23,0.12); }
-        .switch.on { background: linear-gradient(90deg, #bae6fd, #dbeafe); box-shadow: 0 0 0 3px rgba(14,165,233,0.18), 0 0 24px rgba(14,165,233,0.35); }
-        .knob { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: linear-gradient(180deg, #fff, #e2e8f0); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.15); transition: transform 0.2s ease; }
-        .switch.on .knob { transform: translateX(26px); }
-        .content { padding: 22px; }
-        .layout { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
         .course { background: linear-gradient(180deg, #ffffff, #f8fafc); border: 1px solid var(--border); border-radius: 14px; padding: 14px; cursor: pointer; transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s ease, border-color 0.2s ease; transform-style: preserve-3d; position: relative; }
         .course:hover { transform: translateY(-3px) perspective(700px) rotateX(1.5deg) rotateY(-1.5deg); box-shadow: 0 10px 20px rgba(2,8,23,0.10); border-color: #c7d2fe; }
         .course-icon { font-size: 20px; line-height: 1; margin-right: 8px; }
@@ -63,6 +53,9 @@
         .resource a { color: var(--brand-strong); text-decoration: none; font-weight: 800; }
         .resource p { margin: 6px 0 0 0; font-size: 12px; color: var(--muted); }
         .muted { color: var(--muted); }
+        .content { padding: 22px; }
+        .layout { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
         @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -85,8 +78,6 @@
             { id: 'product-mgmt', title: 'Product Management Basics', desc: 'Discovery, Prioritization, Roadmaps, Delivery', icon: '🧭', tags: ['Discovery','PRD','Roadmaps'], steps: ['Customer discovery and problem validation','Define outcomes and success metrics','Prioritization frameworks (RICE/MoSCoW)','Write succinct PRDs and user stories','Roadmapping and stakeholder alignment','Launch, measure, iterate'], resources: [{ name: 'SVPG Resources', url: 'https://www.svpg.com/articles/', note: 'Product strategy articles' },{ name: 'Atlassian Agile', url: 'https://www.atlassian.com/agile', note: 'Agile methodology guide' },{ name: 'Product School', url: 'https://productschool.com/blog/', note: 'Free PM resources' }] },
             { id: 'digital-mktg', title: 'Digital Marketing Essentials', desc: 'SEO, Content, Ads, Analytics', icon: '📣', tags: ['SEO','Content','Analytics'], steps: ['Define audience and value proposition','SEO fundamentals and keyword research','Create content and landing pages','Run basic ad campaigns (search/social)','Measure with analytics and iterate','Build an email list and nurture flows'], resources: [{ name: 'Marketing Basics Guide', url: './resources/marketing-basics.html', note: 'Local marketing fundamentals' },{ name: 'SEO Checklist', url: './resources/seo-checklist.html', note: 'Step-by-step SEO guide' },{ name: 'Analytics Setup', url: './resources/analytics-setup.html', note: 'Google Analytics tutorial' }] },
             { id: 'game-dev', title: 'Game Development', desc: 'Unity, C#, Game Design, 2D/3D', icon: '🎮', tags: ['Unity','C#','Game Design'], steps: ['Learn Unity basics and interface','C# scripting fundamentals','Game design principles','2D sprite animation and physics','3D modeling and lighting','Publish your first game'], resources: [{ name: 'Unity Tutorials', url: './resources/unity-tutorials.html', note: 'Local Unity learning path' },{ name: 'C# Game Scripting', url: './resources/csharp-games.html', note: 'Game programming basics' },{ name: 'Game Design Principles', url: './resources/game-design.html', note: 'Core game design concepts' }] },
-            
-
         ];
 
         function CourseCard({ course, onSelect }) {
@@ -111,7 +102,7 @@
                 return (
                     <div className="panel">
                         <h3 className="panel-title">Select a course to view the roadmap</h3>
-                        <div className="muted">No course selected.</div>
+                        <div className="muted">Click on any course card to see detailed learning steps and resources.</div>
                     </div>
                 );
             }
@@ -142,9 +133,7 @@
         }
 
         function SmartRoadmaps() {
-            const [enabled, setEnabled] = React.useState(false);
             const [selected, setSelected] = React.useState(null);
-            const toggle = () => setEnabled(v => !v);
             const onSelect = (c) => setSelected(c);
 
             return (
@@ -182,18 +171,14 @@
                                     <p className="header-subtitle">Explore curated learning paths with steps and resources</p>
                                 </div>
                             </div>
-                            <div className="toggle" role="button" aria-pressed={enabled} onClick={toggle}>
-                                <span className="toggle-label">Smart Roadmaps</span>
-                                <div className={"switch" + (enabled ? " on" : "") } aria-hidden="true">
-                                    <div className="knob"></div>
-                                </div>
-                            </div>
                         </div>
                         <div className="content">
                             <div className="layout">
                                 <div>
-                                    <div style={{ marginBottom: 10 }} className="muted">Toggle to explore curated courses</div>
-                                    <div className="grid" style={{ display: enabled ? 'grid' : 'none' }}>
+                                    <div style={{ marginBottom: 16 }} className="muted">
+                                        Choose from our curated learning paths below
+                                    </div>
+                                    <div className="grid">
                                         {COURSES.map(c => (
                                             <CourseCard key={c.id} course={c} onSelect={onSelect} />
                                         ))}
