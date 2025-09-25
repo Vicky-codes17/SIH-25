@@ -30,10 +30,11 @@ export default function LoginPage() {
     try {
       await login(email, password);
       
-      // Dispatch event for chatbot to update auth state
+      // Dispatch event for chatbot
       window.dispatchEvent(new CustomEvent('loginSuccess'));
       
-      navigate('/dashboard', { replace: true });
+      // Navigate to student info first
+      navigate('/student-info', { replace: true });
     } catch (error) {
       setError(getFirebaseErrorMessage(error.code));
     } finally {
@@ -54,7 +55,7 @@ export default function LoginPage() {
       window.dispatchEvent(new CustomEvent('loginSuccess'));
       
       // Navigate immediately without waiting for profile creation
-      navigate('/dashboard', { replace: true });
+      navigate('/student-info', { replace: true });
     } catch (error) {
       console.error('Google login failed:', error);
       setError(getFirebaseErrorMessage(error.code));
@@ -76,7 +77,7 @@ export default function LoginPage() {
       window.dispatchEvent(new CustomEvent('loginSuccess'));
       
       // Navigate immediately without waiting for profile creation
-      navigate('/dashboard', { replace: true });
+      navigate('/student-info', { replace: true });
     } catch (error) {
       console.error('GitHub login failed:', error);
       setError(getFirebaseErrorMessage(error.code));

@@ -20,6 +20,8 @@ import {
   Loader2,
   Trophy,
   Monitor,
+  Wifi,
+  WifiOff,
 } from "lucide-react"
 import { CollegesList } from "./CollegesList"
 import { EbooksList } from "./EbooksList"
@@ -82,8 +84,11 @@ const dashboardSections = [
 ]
 
 export function LearningDashboard() {
+  // MOVE ALL HOOKS TO THE TOP - BEFORE ANY CONDITIONAL LOGIC OR RETURNS
   const navigate = useNavigate()
   const location = useLocation()
+  const { currentUser, logout, updateUserProfile, isOnline } = useAuth();
+  
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showProfileDropdown, setShowProfileDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -93,8 +98,8 @@ export function LearningDashboard() {
   const [showExamsList, setShowExamsList] = useState(false)
   const [navigationHistory, setNavigationHistory] = useState([])
   const dropdownRef = useRef(null)
-  
-  const { currentUser, logout } = useAuth();
+
+  // ALL useEffect hooks must be at the top level
   // Prevent back navigation to login/auth pages
   useEffect(() => {
     const handlePopState = (event) => {
@@ -148,7 +153,7 @@ export function LearningDashboard() {
     if (previousPage && !navigationHistory.includes(previousPage)) {
       setNavigationHistory(prev => [...prev, previousPage])
     }
-  }, [location])
+  }, [location, navigationHistory])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -164,6 +169,32 @@ export function LearningDashboard() {
     }
   }, [])
 
+  // Check if user just completed quiz
+  useEffect(() => {
+    const quizCompleted = localStorage.getItem('quizCompleted');
+    const quizScore = localStorage.getItem('quizScore');
+    const quizResults = localStorage.getItem('quizResults');
+
+    if (quizCompleted && quizScore) {
+      // Save quiz results to Firebase
+      updateUserProfile({
+        quizCompleted: true,
+        quizScore: parseInt(quizScore),
+        quizResults: JSON.parse(quizResults || '{}'),
+        quizCompletedAt: new Date().toISOString(),
+        onboardingCompleted: true
+      }).then(() => {
+        // Clear localStorage after saving
+        localStorage.removeItem('quizCompleted');
+        localStorage.removeItem('quizScore');
+        localStorage.removeItem('quizResults');
+      }).catch(error => {
+        console.error('Error saving quiz results:', error);
+      });
+    }
+  }, [updateUserProfile]);
+
+  // NOW DEFINE ALL YOUR HANDLER FUNCTIONS
   const handleSectionClick = (section) => {
     if (section.title === "Roadmaps") {
       // Use replace instead of navigate to prevent back to dashboard in browser history
@@ -252,26 +283,24 @@ export function LearningDashboard() {
     }
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setIsLoggingOut(true)
     setShowProfileDropdown(false)
     
-    // Simulate logout process with a delay
-    setTimeout(() => {
-      // Clear any user data, tokens, etc.
-      localStorage.removeItem('userToken')
-      localStorage.removeItem('userData')
-      localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('googleAuthData')
-      localStorage.removeItem('githubAuthData')
+    try {
+      // Use Firebase logout instead of localStorage
+      await logout()
       
       // Clear browser history to prevent going back to authenticated pages
       window.history.replaceState(null, '', '/')
       
       // Navigate to welcome page
       navigate('/', { replace: true })
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
       setIsLoggingOut(false)
-    }, 2000)
+    }
   }
 
   const handleProfileClick = () => {
@@ -301,26 +330,48 @@ export function LearningDashboard() {
     section.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // NOW HANDLE THE CONDITIONAL RENDERS AFTER ALL HOOKS
   // Show colleges list if requested - use specific back handler
   if (showCollegesList) {
-    return <CollegesList onBack={handleBackFromColleges} />
+    return (
+      <>
+        <CollegesList onBack={handleBackFromColleges} />
+        <ChatBot />
+      </>
+    )
   }
 
   // Show ebooks list if requested - use specific back handler
   if (showEbooksList) {
-    return <EbooksList onBack={handleBackFromEbooks} />
+    return (
+      <>
+        <EbooksList onBack={handleBackFromEbooks} />
+        <ChatBot />
+      </>
+    )
   }
 
   // Show courses list if requested - use specific back handler
   if (showCoursesList) {
-    return <CoursesList onBack={handleBackFromCourses} />
+    return (
+      <>
+        <CoursesList onBack={handleBackFromCourses} />
+        <ChatBot />
+      </>
+    )
   }
 
   // Show exams list if requested - use specific back handler
   if (showExamsList) {
-    return <ExamsList onBack={handleBackFromExams} />
+    return (
+      <>
+        <ExamsList onBack={handleBackFromExams} />
+        <ChatBot />
+      </>
+    )
   }
 
+  // MAIN DASHBOARD RENDER
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Logout Loading Overlay */}
@@ -373,6 +424,9 @@ export function LearningDashboard() {
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
+                <span className="text-sm font-medium text-gray-700">
+                  {currentUser?.displayName || currentUser?.email || 'User'}
+                </span>
                 <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${showProfileDropdown ? 'rotate-180' : ''}`} />
               </button>
 
@@ -435,6 +489,28 @@ export function LearningDashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Learning Resources</h1>
           </div>
           <p className="text-gray-600 text-lg">Explore educational opportunities and resources</p>
+          
+          {/* Add Welcome Message */}
+          {currentUser && (
+            <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
+              <p className="text-lg text-gray-800">
+                Welcome back, <span className="font-semibold text-blue-600">
+                  {currentUser.displayName || currentUser.email || 'User'}
+                </span>! 
+                Ready to continue your learning journey?
+              </p>
+            </div>
+          )}
+
+          {/* Add Network Status Indicator */}
+          {!isOnline && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
+              <WifiOff className="w-5 h-5 text-yellow-600" />
+              <p className="text-yellow-800">
+                You're currently offline. Some features may be limited.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Resources Grid */}

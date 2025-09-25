@@ -487,5 +487,20 @@
             resetButtons();
         });
     </script>
+    <!-- Add this script at the end of your quiz-index.html file -->
+    <script>
+    function completeQuiz(score, results) {
+        // Save quiz results to localStorage for the React app to pick up
+        localStorage.setItem('quizCompleted', 'true');
+        localStorage.setItem('quizScore', score);
+        localStorage.setItem('quizResults', JSON.stringify(results));
+        
+        // Redirect back to React dashboard
+        window.location.href = '/dashboard';
+    }
+
+    // Call this function when quiz is completed
+    // Example: completeQuiz(85, { /* quiz results */ });
+    </script>
 </body>
 </html>

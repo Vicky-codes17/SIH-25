@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { BookOpen, MapPin, Target, ChevronDown, CheckCircle, Asterisk, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Chatbot from '../components/chatbot/ChatBot';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import ChatBot from '../components/chatbot/ChatBot';
 
 
 // Location Data: States and Major Cities in India
@@ -159,7 +161,10 @@ const ThemedSelect = ({ name, children, value, onChange }) => (
 );
 
 
-export default function StudentInfo({ userData = MOCK_USER_DATA_12th }) {
+export default function StudentInfo() {
+    const navigate = useNavigate();
+    const { currentUser, userProfile, updateUserProfile } = useAuth();
+    
     const [formData, setFormData] = useState({
         board10th: '',
         year10th: '',
@@ -167,7 +172,7 @@ export default function StudentInfo({ userData = MOCK_USER_DATA_12th }) {
         board12th: '',
         year12th: '',
         percentage12th: '',
-        stream12th: userData.stream || '',
+        stream12th: '',
         state: 'Jammu and Kashmir',
         city: '',
         preferredField: '',
@@ -255,7 +260,7 @@ export default function StudentInfo({ userData = MOCK_USER_DATA_12th }) {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         if (!validateForm()) {
@@ -264,11 +269,26 @@ export default function StudentInfo({ userData = MOCK_USER_DATA_12th }) {
 
         setLoading(true);
         
-        // Simulate saving process
-        setTimeout(() => {
-            console.log("Submitting Profile Data:", formData);
-            window.location.href = "/quiz-index.html";
-        }, 1500); // 1.5 second loading
+        try {
+            // Save to Firebase instead of localStorage
+            await updateUserProfile({
+                ...formData,
+                profileCompleted: true,
+                studentInfoCompleted: true,
+                completedAt: new Date().toISOString()
+            });
+
+            console.log("Profile Data Saved Successfully");
+            
+            // Navigate to quiz route (which will redirect to your HTML quiz)
+            navigate('/quiz', { replace: true });
+            
+        } catch (error) {
+            console.error('Error saving student info:', error);
+            setErrors({ general: 'Failed to save profile. Please try again.' });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -472,6 +492,7 @@ export default function StudentInfo({ userData = MOCK_USER_DATA_12th }) {
                     </motion.div>
                 </form>
             </motion.div>
+            <ChatBot />
         </div>
     );
 }

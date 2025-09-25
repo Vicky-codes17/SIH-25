@@ -6,8 +6,6 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
-  updateEmail,
-  updatePassword
 } from 'firebase/auth';
 import { 
   doc, 
@@ -15,28 +13,10 @@ import {
   getDoc, 
   updateDoc,
   serverTimestamp,
-  connectFirestoreEmulator,
   enableNetwork,
   disableNetwork
 } from 'firebase/firestore';
 import { auth, db, googleProvider, githubProvider } from '../config/firebase';
-
-// Add connection retry logic
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000;
-
-const retryOperation = async (operation, retries = MAX_RETRIES) => {
-  try {
-    return await operation();
-  } catch (error) {
-    if (retries > 0 && (error.code === 'unavailable' || error.code === 'deadline-exceeded')) {
-      console.log(`Retrying operation... ${MAX_RETRIES - retries + 1}/${MAX_RETRIES}`);
-      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-      return retryOperation(operation, retries - 1);
-    }
-    throw error;
-  }
-};
 
 const AuthContext = createContext();
 
@@ -52,38 +32,44 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
-  
-  // Enable Firestore network on component mount
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Monitor network status
   useEffect(() => {
-    const enableFirestoreNetwork = async () => {
-      try {
-        await enableNetwork(db);
-        console.log('Firestore network enabled');
-      } catch (error) {
-        console.log('Firestore network already enabled or error:', error);
-      }
+    const handleOnline = () => {
+      setIsOnline(true);
+      console.log('Network connection restored');
     };
     
-    enableFirestoreNetwork();
+    const handleOffline = () => {
+      setIsOnline(false);
+      console.log('Network connection lost');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
-  // Create user profile in Firestore with retry logic
+  // Create user profile with better error handling
   const createUserProfile = async (user, additionalData = {}) => {
     if (!user) return;
     
-    return retryOperation(async () => {
+    try {
       const userRef = doc(db, 'users', user.uid);
       const userSnap = await getDoc(userRef);
       
       if (!userSnap.exists()) {
         const { displayName, email, photoURL } = user;
-        const createdAt = serverTimestamp();
-        
-        await setDoc(userRef, {
+        const profileData = {
           displayName: displayName || additionalData.name || '',
           email,
           photoURL: photoURL || '',
-          createdAt,
+          createdAt: serverTimestamp(),
           lastLogin: serverTimestamp(),
           level: 1,
           xp: 0,
@@ -92,37 +78,62 @@ export const AuthProvider = ({ children }) => {
           studyHours: 0,
           careerPaths: [],
           ...additionalData
-        });
+        };
+        
+        await setDoc(userRef, profileData);
+        setUserProfile(profileData);
         console.log('User profile created successfully');
       } else {
         // Update last login
         await updateDoc(userRef, {
           lastLogin: serverTimestamp()
         });
+        const existingProfile = userSnap.data();
+        setUserProfile(existingProfile);
         console.log('User login updated successfully');
       }
       
       return userRef;
-    });
+    } catch (error) {
+      console.error('Profile creation/update failed:', error);
+      
+      // If offline, create a minimal local profile
+      if (error.code === 'unavailable' || !isOnline) {
+        const fallbackProfile = {
+          displayName: user.displayName || user.email,
+          email: user.email,
+          photoURL: user.photoURL || '',
+          offline: true
+        };
+        setUserProfile(fallbackProfile);
+        console.log('Using offline fallback profile');
+      }
+      
+      // Don't throw error - allow auth to succeed even if profile creation fails
+      return null;
+    }
   };
 
-  // Fetch user profile from Firestore with retry logic
+  // Fetch user profile with offline handling
   const fetchUserProfile = async (uid) => {
-    return retryOperation(async () => {
+    try {
       const userRef = doc(db, 'users', uid);
       const userSnap = await getDoc(userRef);
       
       if (userSnap.exists()) {
         const profileData = userSnap.data();
         setUserProfile(profileData);
-        console.log('User profile fetched successfully');
         return profileData;
       }
       return null;
-    });
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      // Return null instead of throwing - let the app continue
+      return null;
+    }
   };
 
-  // Update user profile
+  // Update user profile with offline handling
   const updateUserProfile = async (updates) => {
     if (!currentUser) return;
     
@@ -147,6 +158,14 @@ export const AuthProvider = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Error updating profile:', error);
+      
+      // If offline, update local state only
+      if (error.code === 'unavailable' || !isOnline) {
+        setUserProfile(prev => ({ ...prev, ...updates, offline: true }));
+        console.log('Profile updated locally (offline mode)');
+        return true;
+      }
+      
       throw error;
     }
   };
@@ -161,8 +180,10 @@ export const AuthProvider = ({ children }) => {
         displayName: name
       });
       
-      // Create user profile in Firestore
-      await createUserProfile(result.user, { displayName: name });
+      // Try to create profile, but don't fail if it doesn't work
+      createUserProfile(result.user, { displayName: name }).catch(error => {
+        console.error('Profile creation failed during signup:', error);
+      });
       
       return result;
     } catch (error) {
@@ -171,21 +192,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Email/Password login with better error handling
+  // Email/Password login
   const login = async (email, password) => {
     try {
-      console.log('Starting email login...');
       const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log('Email auth successful, updating profile...');
       
-      // Don't block the auth success on profile update
+      // Try to update profile, but don't fail if it doesn't work
       createUserProfile(result.user).catch(error => {
-        console.error('Profile update failed, but auth succeeded:', error);
+        console.error('Profile update failed during login:', error);
       });
       
       return result;
     } catch (error) {
-      console.error('Login error:', error.code, error.message);
+      console.error('Login error:', error);
       throw error;
     }
   };
@@ -193,18 +212,16 @@ export const AuthProvider = ({ children }) => {
   // Google sign in with better error handling
   const signInWithGoogle = async () => {
     try {
-      console.log('Starting Google sign-in...');
       const result = await signInWithPopup(auth, googleProvider);
-      console.log('Google auth successful, creating profile...');
       
-      // Don't block the auth success on profile creation
+      // Try to create/update profile, but don't block authentication
       createUserProfile(result.user).catch(error => {
-        console.error('Profile creation failed, but auth succeeded:', error);
+        console.error('Profile creation failed during Google sign-in:', error);
       });
       
       return result;
     } catch (error) {
-      console.error('Google sign in error:', error.code, error.message);
+      console.error('Google sign in error:', error);
       throw error;
     }
   };
@@ -212,18 +229,16 @@ export const AuthProvider = ({ children }) => {
   // GitHub sign in with better error handling
   const signInWithGithub = async () => {
     try {
-      console.log('Starting GitHub sign-in...');
       const result = await signInWithPopup(auth, githubProvider);
-      console.log('GitHub auth successful, creating profile...');
       
-      // Don't block the auth success on profile creation
+      // Try to create/update profile, but don't block authentication
       createUserProfile(result.user).catch(error => {
-        console.error('Profile creation failed, but auth succeeded:', error);
+        console.error('Profile creation failed during GitHub sign-in:', error);
       });
       
       return result;
     } catch (error) {
-      console.error('GitHub sign in error:', error.code, error.message);
+      console.error('GitHub sign in error:', error);
       throw error;
     }
   };
@@ -239,28 +254,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Auth state change listener with better error handling
+  // Auth state change listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
-          console.log('User authenticated:', user.email);
           setCurrentUser(user);
           
-          // Try to fetch profile, but don't block if it fails
+          // Try to fetch profile, but use fallback if it fails
           try {
             await fetchUserProfile(user.uid);
           } catch (error) {
-            console.error('Failed to fetch user profile:', error);
-            // Set empty profile so user can still access the app
+            console.error('Failed to fetch profile on auth change:', error);
+            // Create minimal fallback profile
             setUserProfile({
               displayName: user.displayName || user.email,
               email: user.email,
-              photoURL: user.photoURL || ''
+              photoURL: user.photoURL || '',
+              offline: true
             });
           }
         } else {
-          console.log('User not authenticated');
           setCurrentUser(null);
           setUserProfile(null);
         }
@@ -285,7 +299,8 @@ export const AuthProvider = ({ children }) => {
     updateUserProfile,
     updateProfile: updateUserProfile,
     fetchUserProfile,
-    loading
+    loading,
+    isOnline
   };
 
   return (

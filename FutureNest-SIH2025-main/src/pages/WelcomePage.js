@@ -48,7 +48,7 @@ export default function WelcomePage() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-4">
               <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mr-3" />
-              <div className="text-2xl font-bold text-indigo-600">CareerPath</div>
+              <div className="text-2xl font-bold text-indigo-600">Future Nest</div>
             </div>
             <p className="text-slate-600 text-lg font-medium">{loadingText}</p>
             <div className="mt-4 w-64 bg-slate-200 rounded-full h-2 mx-auto">
@@ -63,7 +63,7 @@ export default function WelcomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">CareerPath</h1>
+              <h1 className="text-2xl font-bold text-indigo-600">FutureNest</h1>
             </div>
             <div className="flex items-center space-x-4">
               <button 
