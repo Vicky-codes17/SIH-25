@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import chatbotUtils from '../../utils/chatbotUtils';
 import './ChatBot.css';
 
 const ChatBot = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser, userProfile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
@@ -21,115 +23,27 @@ const ChatBot = () => {
 
   // Enhanced authentication status check
   useEffect(() => {
-    const checkAuthStatus = () => {
-      // Check multiple authentication methods
-      const authChecks = [
-        localStorage.getItem('isAuthenticated') === 'true',
-        localStorage.getItem('userToken') !== null && localStorage.getItem('userToken') !== '' && localStorage.getItem('userToken') !== 'null',
-        localStorage.getItem('googleAuthData') !== null && localStorage.getItem('googleAuthData') !== '' && localStorage.getItem('googleAuthData') !== 'null',
-        localStorage.getItem('githubAuthData') !== null && localStorage.getItem('githubAuthData') !== '' && localStorage.getItem('githubAuthData') !== 'null',
-        localStorage.getItem('user_logged_in') === 'true',
-        localStorage.getItem('userData') !== null && localStorage.getItem('userData') !== '' && localStorage.getItem('userData') !== 'null',
-        localStorage.getItem('user_data') !== null && localStorage.getItem('user_data') !== '' && localStorage.getItem('user_data') !== 'null',
-      ];
-      
-      const authStatus = authChecks.some(check => check === true);
-      
-      console.log('🔍 Auth Check Results:', {
-        isAuthenticated: localStorage.getItem('isAuthenticated'),
-        userToken: localStorage.getItem('userToken'),
-        user_logged_in: localStorage.getItem('user_logged_in'),
-        userData: localStorage.getItem('userData'),
-        authStatus: authStatus,
-        guestChatsUsed: guestChatsUsed
+    if (currentUser) {
+      setIsLoggedIn(true);
+      setUserData({
+        name: currentUser.displayName || userProfile?.displayName || 'Student User',
+        email: currentUser.email,
+        isAuthenticated: true,
+        loginTime: new Date().toISOString()
       });
-      
-      setIsLoggedIn(authStatus);
-      
-      if (authStatus) {
-        // Try to get user data from various sources
-        const userDataSources = [
-          localStorage.getItem('userData'),
-          localStorage.getItem('user_data'),
-          localStorage.getItem('googleAuthData'),
-          localStorage.getItem('githubAuthData')
-        ];
-        
-        let foundUserData = null;
-        for (const source of userDataSources) {
-          if (source && source !== 'null' && source !== '') {
-            try {
-              foundUserData = JSON.parse(source);
-              break;
-            } catch (e) {
-              continue;
-            }
-          }
-        }
-        
-        if (foundUserData) {
-          setUserData(foundUserData);
-        } else {
-          // Set default user data for authenticated users without stored data
-          const defaultUserData = {
-            name: 'Student User',
-            email: 'student@futurenest.com',
-            isAuthenticated: true,
-            loginTime: new Date().toISOString()
-          };
-          setUserData(defaultUserData);
-        }
-        
-        // Reset guest chats for authenticated users
-        setGuestChatsUsed(0);
-        localStorage.removeItem('guest_chats_used');
-      } else {
-        setUserData(null);
-        // Load guest chats for non-authenticated users
-        const storedGuestChats = localStorage.getItem('guest_chats_used');
-        if (storedGuestChats) {
-          setGuestChatsUsed(parseInt(storedGuestChats));
-        }
+      // Reset guest chats for authenticated users
+      setGuestChatsUsed(0);
+      localStorage.removeItem('guest_chats_used');
+    } else {
+      setIsLoggedIn(false);
+      setUserData(null);
+      // Load guest chats for non-authenticated users
+      const storedGuestChats = localStorage.getItem('guest_chats_used');
+      if (storedGuestChats) {
+        setGuestChatsUsed(parseInt(storedGuestChats));
       }
-    };
-
-    // Initial check
-    checkAuthStatus();
-    
-    // Listen for authentication changes
-    const handleStorageChange = () => {
-      console.log('📦 Storage changed, rechecking auth...');
-      checkAuthStatus();
-    };
-    
-    const handleAuthStateChange = () => {
-      console.log('🔄 Auth state changed, rechecking...');
-      setTimeout(checkAuthStatus, 100); // Small delay to ensure localStorage is updated
-    };
-    
-    // Add multiple event listeners to catch all authentication changes
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('authStateChanged', handleAuthStateChange);
-    window.addEventListener('userLoggedIn', handleAuthStateChange);
-    window.addEventListener('userSignedUp', handleAuthStateChange);
-    window.addEventListener('loginSuccess', handleAuthStateChange);
-    window.addEventListener('signupSuccess', handleAuthStateChange);
-    
-    // Periodic check every 3 seconds to ensure we catch authentication changes
-    const authCheckInterval = setInterval(() => {
-      checkAuthStatus();
-    }, 3000);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('authStateChanged', handleAuthStateChange);
-      window.removeEventListener('userLoggedIn', handleAuthStateChange);
-      window.removeEventListener('userSignedUp', handleAuthStateChange);
-      window.removeEventListener('loginSuccess', handleAuthStateChange);
-      window.removeEventListener('signupSuccess', handleAuthStateChange);
-      clearInterval(authCheckInterval);
-    };
-  }, []);
+    }
+  }, [currentUser, userProfile]);
 
   // Initialize chatbot messages
   useEffect(() => {

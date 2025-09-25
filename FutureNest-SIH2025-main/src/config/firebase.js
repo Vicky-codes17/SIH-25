@@ -1,41 +1,38 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, GithubAuthProvider } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v9-compat and later, measurementId is optional
 const firebaseConfig = {
-  // Replace with your actual Firebase config
-  apiKey: "your-api-key-here",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id",
-  measurementId: "G-XXXXXXXXXX"
+  apiKey: "AIzaSyC0T_xCnDGNVyoUqRhkWtFtjEBLcCmUM80",
+  authDomain: "sih-2025app.firebaseapp.com",
+  databaseURL: "https://sih-2025app-default-rtdb.firebaseio.com",
+  projectId: "sih-2025app",
+  storageBucket: "sih-2025app.firebasestorage.app",
+  messagingSenderId: "594078392304",
+  appId: "1:594078392304:web:e7e0be9e2a8e418bec8735",
+  measurementId: "G-M95N42D431"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Authentication and get a reference to the service
 export const auth = getAuth(app);
-
-// Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
-
-// Initialize Cloud Storage and get a reference to the service
 export const storage = getStorage(app);
 
-// Configure authentication providers
 export const googleProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 
-// Add additional scopes for more user information
+// Configure providers
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
 githubProvider.addScope('user:email');
+
+// Set custom parameters
+googleProvider.setCustomParameters({
+  prompt: 'select_account'
+});
 
 export default app;

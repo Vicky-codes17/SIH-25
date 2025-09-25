@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { BookOpen, MapPin, Target, ChevronDown, CheckCircle, Asterisk, AlertCircle, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Chatbot from '../components/chatbot/ChatBot';
+
 
 // Location Data: States and Major Cities in India
 const locationData = {

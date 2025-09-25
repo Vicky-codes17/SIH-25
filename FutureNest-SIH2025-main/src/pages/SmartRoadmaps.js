@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Chatbot from '../components/chatbot/ChatBot';
+
 
 export default function SmartRoadmaps() {
   const navigate = useNavigate();

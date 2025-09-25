@@ -1,222 +1,274 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
-  signInWithPopup, 
-  signOut, 
-  onAuthStateChanged,
+  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword 
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  updateProfile,
+  updateEmail,
+  updatePassword
 } from 'firebase/auth';
 import { 
   doc, 
   setDoc, 
   getDoc, 
   updateDoc,
-  serverTimestamp 
+  serverTimestamp,
+  connectFirestoreEmulator,
+  enableNetwork,
+  disableNetwork
 } from 'firebase/firestore';
 import { auth, db, googleProvider, githubProvider } from '../config/firebase';
 
+// Add connection retry logic
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
+const retryOperation = async (operation, retries = MAX_RETRIES) => {
+  try {
+    return await operation();
+  } catch (error) {
+    if (retries > 0 && (error.code === 'unavailable' || error.code === 'deadline-exceeded')) {
+      console.log(`Retrying operation... ${MAX_RETRIES - retries + 1}/${MAX_RETRIES}`);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return retryOperation(operation, retries - 1);
+    }
+    throw error;
+  }
+};
+
 const AuthContext = createContext();
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+  
+  // Enable Firestore network on component mount
+  useEffect(() => {
+    const enableFirestoreNetwork = async () => {
+      try {
+        await enableNetwork(db);
+        console.log('Firestore network enabled');
+      } catch (error) {
+        console.log('Firestore network already enabled or error:', error);
+      }
+    };
+    
+    enableFirestoreNetwork();
+  }, []);
 
-  // Create or update user profile in Firestore
+  // Create user profile in Firestore with retry logic
   const createUserProfile = async (user, additionalData = {}) => {
     if (!user) return;
-
-    const userRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      const { displayName, email, photoURL, providerData } = user;
-      const provider = providerData[0]?.providerId || 'email';
+    
+    return retryOperation(async () => {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
       
-      try {
+      if (!userSnap.exists()) {
+        const { displayName, email, photoURL } = user;
+        const createdAt = serverTimestamp();
+        
         await setDoc(userRef, {
-          displayName: displayName || email?.split('@')[0] || 'User',
+          displayName: displayName || additionalData.name || '',
           email,
-          photoURL,
-          provider,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          // Default profile data
+          photoURL: photoURL || '',
+          createdAt,
+          lastLogin: serverTimestamp(),
           level: 1,
           xp: 0,
-          nextLevelXp: 1000,
-          totalProgress: 0,
-          challengesAttended: 0,
-          timeSpent: "0h 0m",
-          coursesCompleted: 0,
-          totalCourses: 0,
-          currentStreak: 0,
-          rank: "#999",
-          points: 0,
-          // Career and academic data
-          title: "Student",
-          location: "Not specified",
-          phone: "",
-          joinDate: new Date().toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long' 
-          }),
-          // Stats
-          aptitudeTests: 0,
-          careerPathsExplored: 0,
-          skillsAssessed: 0,
+          skillsCompleted: 0,
+          testsTaken: 0,
           studyHours: 0,
-          // Additional data from social login
+          careerPaths: [],
           ...additionalData
         });
-      } catch (error) {
-        console.error('Error creating user profile:', error);
-      }
-    } else {
-      // Update last login time
-      try {
+        console.log('User profile created successfully');
+      } else {
+        // Update last login
         await updateDoc(userRef, {
-          updatedAt: serverTimestamp(),
           lastLogin: serverTimestamp()
         });
-      } catch (error) {
-        console.error('Error updating user profile:', error);
+        console.log('User login updated successfully');
       }
-    }
+      
+      return userRef;
+    });
   };
 
-  // Fetch user profile data
+  // Fetch user profile from Firestore with retry logic
   const fetchUserProfile = async (uid) => {
-    if (!uid) return null;
-    
-    try {
+    return retryOperation(async () => {
       const userRef = doc(db, 'users', uid);
       const userSnap = await getDoc(userRef);
       
       if (userSnap.exists()) {
         const profileData = userSnap.data();
         setUserProfile(profileData);
+        console.log('User profile fetched successfully');
         return profileData;
       }
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-    return null;
+      return null;
+    });
   };
 
   // Update user profile
-  const updateUserProfile = async (uid, updates) => {
-    if (!uid) return;
+  const updateUserProfile = async (updates) => {
+    if (!currentUser) return;
     
     try {
-      const userRef = doc(db, 'users', uid);
+      const userRef = doc(db, 'users', currentUser.uid);
       await updateDoc(userRef, {
         ...updates,
         updatedAt: serverTimestamp()
       });
       
-      // Refresh local profile data
-      await fetchUserProfile(uid);
+      // Update local state
+      setUserProfile(prev => ({ ...prev, ...updates }));
+      
+      // Update Firebase Auth profile if name or photo changed
+      if (updates.displayName || updates.photoURL) {
+        await updateProfile(currentUser, {
+          displayName: updates.displayName,
+          photoURL: updates.photoURL
+        });
+      }
+      
+      return true;
     } catch (error) {
-      console.error('Error updating user profile:', error);
+      console.error('Error updating profile:', error);
       throw error;
     }
   };
 
-  // Sign up with email and password
-  const signup = async (email, password, additionalData = {}) => {
+  // Email/Password signup
+  const signup = async (email, password, name) => {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      await createUserProfile(result.user, additionalData);
+      
+      // Update the user's display name
+      await updateProfile(result.user, {
+        displayName: name
+      });
+      
+      // Create user profile in Firestore
+      await createUserProfile(result.user, { displayName: name });
+      
       return result;
     } catch (error) {
-      console.error('Error signing up:', error);
+      console.error('Signup error:', error);
       throw error;
     }
   };
 
-  // Sign in with email and password
+  // Email/Password login with better error handling
   const login = async (email, password) => {
     try {
+      console.log('Starting email login...');
       const result = await signInWithEmailAndPassword(auth, email, password);
-      await createUserProfile(result.user);
+      console.log('Email auth successful, updating profile...');
+      
+      // Don't block the auth success on profile update
+      createUserProfile(result.user).catch(error => {
+        console.error('Profile update failed, but auth succeeded:', error);
+      });
+      
       return result;
     } catch (error) {
-      console.error('Error signing in:', error);
+      console.error('Login error:', error.code, error.message);
       throw error;
     }
   };
 
-  // Sign in with Google
+  // Google sign in with better error handling
   const signInWithGoogle = async () => {
     try {
+      console.log('Starting Google sign-in...');
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      console.log('Google auth successful, creating profile...');
       
-      // Extract additional info from Google profile
-      const additionalData = {
-        provider: 'google.com',
-        photoURL: user.photoURL,
-      };
+      // Don't block the auth success on profile creation
+      createUserProfile(result.user).catch(error => {
+        console.error('Profile creation failed, but auth succeeded:', error);
+      });
       
-      await createUserProfile(user, additionalData);
       return result;
     } catch (error) {
-      console.error('Error signing in with Google:', error);
+      console.error('Google sign in error:', error.code, error.message);
       throw error;
     }
   };
 
-  // Sign in with GitHub
+  // GitHub sign in with better error handling
   const signInWithGithub = async () => {
     try {
+      console.log('Starting GitHub sign-in...');
       const result = await signInWithPopup(auth, githubProvider);
-      const user = result.user;
+      console.log('GitHub auth successful, creating profile...');
       
-      // Extract additional info from GitHub profile
-      const additionalData = {
-        provider: 'github.com',
-        photoURL: user.photoURL,
-      };
+      // Don't block the auth success on profile creation
+      createUserProfile(result.user).catch(error => {
+        console.error('Profile creation failed, but auth succeeded:', error);
+      });
       
-      await createUserProfile(user, additionalData);
       return result;
     } catch (error) {
-      console.error('Error signing in with GitHub:', error);
+      console.error('GitHub sign in error:', error.code, error.message);
       throw error;
     }
   };
 
-  // Sign out
+  // Logout
   const logout = async () => {
     try {
       await signOut(auth);
       setUserProfile(null);
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Logout error:', error);
       throw error;
     }
   };
 
-  // Listen for authentication state changes
+  // Auth state change listener with better error handling
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      
-      if (user) {
-        // Ensure user profile exists
-        await createUserProfile(user);
-        // Fetch user profile data
-        await fetchUserProfile(user.uid);
-      } else {
-        setUserProfile(null);
+      try {
+        if (user) {
+          console.log('User authenticated:', user.email);
+          setCurrentUser(user);
+          
+          // Try to fetch profile, but don't block if it fails
+          try {
+            await fetchUserProfile(user.uid);
+          } catch (error) {
+            console.error('Failed to fetch user profile:', error);
+            // Set empty profile so user can still access the app
+            setUserProfile({
+              displayName: user.displayName || user.email,
+              email: user.email,
+              photoURL: user.photoURL || ''
+            });
+          }
+        } else {
+          console.log('User not authenticated');
+          setCurrentUser(null);
+          setUserProfile(null);
+        }
+      } catch (error) {
+        console.error('Auth state change error:', error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     });
 
     return unsubscribe;
@@ -227,10 +279,11 @@ export function AuthProvider({ children }) {
     userProfile,
     signup,
     login,
+    logout,
     signInWithGoogle,
     signInWithGithub,
-    logout,
     updateUserProfile,
+    updateProfile: updateUserProfile,
     fetchUserProfile,
     loading
   };
@@ -240,4 +293,4 @@ export function AuthProvider({ children }) {
       {!loading && children}
     </AuthContext.Provider>
   );
-}
+};

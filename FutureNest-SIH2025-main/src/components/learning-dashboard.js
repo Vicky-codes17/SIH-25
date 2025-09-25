@@ -26,7 +26,8 @@ import { EbooksList } from "./EbooksList"
 import { CoursesList } from "./CoursesList"
 import { ExamsList } from "./ExamsList"
 import { Footer } from "./Footer"
-import { useDummyAuth } from "../contexts/DummyAuthContext"
+import { useAuth } from '../contexts/AuthContext';
+import ChatBot from './chatbot/ChatBot';
 
 const dashboardSections = [
   {
@@ -93,8 +94,7 @@ export function LearningDashboard() {
   const [navigationHistory, setNavigationHistory] = useState([])
   const dropdownRef = useRef(null)
   
-  const { currentUser, logout } = useDummyAuth()
-
+  const { currentUser, logout } = useAuth();
   // Prevent back navigation to login/auth pages
   useEffect(() => {
     const handlePopState = (event) => {
@@ -484,6 +484,9 @@ export function LearningDashboard() {
 
       {/* Footer */}
       <Footer />
+      
+      {/* Add ChatBot at the end */}
+      <ChatBot />
     </div>
   )
 }

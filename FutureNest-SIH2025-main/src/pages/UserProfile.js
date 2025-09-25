@@ -4,7 +4,8 @@ import {
   User, MapPin, Mail, Download, Edit, Settings, Bell, Search, ChevronRight,
   Briefcase, BarChart3, Heart
 } from 'lucide-react';
-import { useDummyAuth } from '../contexts/DummyAuthContext';
+import { useAuth } from '../contexts/AuthContext';
+import ChatBot from '../components/chatbot/ChatBot';
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -12,7 +13,7 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
   
-  const { currentUser, updateProfile } = useDummyAuth();
+  const { currentUser, userProfile, updateUserProfile, logout } = useAuth();
 
   // Use currentUser data from dummy auth
   const profileData = {
@@ -50,7 +51,7 @@ export default function UserProfile() {
 
   const handleSaveProfile = async () => {
     try {
-      await updateProfile(editData);
+      await updateUserProfile(editData);
       setIsEditing(false);
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -84,7 +85,7 @@ export default function UserProfile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 futurenest-profile">
+    <div className="min-h-screen bg-gray-50">
       {/* Profile Header - Only shows in profile section */}
       {showProfileNav && (
         <header className="text-white shadow-lg gradient-futurenest">
@@ -429,6 +430,8 @@ export default function UserProfile() {
 
         </div>
       </div>
+
+      <ChatBot />
     </div>
   );
 }

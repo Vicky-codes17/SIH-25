@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Chrome, Github, User, Mail, Phone, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDummyAuth } from '../contexts/DummyAuthContext';
+import { useAuth } from '../contexts/AuthContext';
+import ChatBot from '../components/chatbot/ChatBot';
+
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +26,8 @@ export default function SignUpPage() {
   });
 
   const navigate = useNavigate();
-  const { signup, signInWithGoogle, signInWithGithub } = useDummyAuth();
+
+  const { signup, signInWithGoogle, signInWithGithub } = useAuth();
 
   const handleEmailSignup = async (e) => {
     e.preventDefault();
@@ -137,7 +140,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-lg w-full">
         {/* Header */}
         <motion.div
@@ -386,6 +389,9 @@ export default function SignUpPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Add Chatbot Component */}
+      <ChatBot />
     </div>
   );
 }

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Chrome, Github, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useDummyAuth } from '../contexts/DummyAuthContext';
+import { useAuth } from '../contexts/AuthContext';
+import ChatBot from '../components/chatbot/ChatBot';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,27 +15,30 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   
-  const { login, signInWithGoogle, signInWithGithub } = useDummyAuth();
+  const { login, signInWithGoogle, signInWithGithub } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
     }
-
+    
     setIsLoading(true);
     setError('');
     
     try {
       await login(email, password);
-      handleSuccessfulAuth();
+      
+      // Dispatch event for chatbot to update auth state
+      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      
+      navigate('/dashboard', { replace: true });
     } catch (error) {
-      console.error('Login failed:', error);
       setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleGoogleLogin = async () => {
@@ -42,13 +46,21 @@ export default function LoginPage() {
     setError('');
     
     try {
-      await signInWithGoogle();
-      handleSuccessfulAuth();
+      console.log('Attempting Google login...');
+      const result = await signInWithGoogle();
+      console.log('Google login successful:', result.user.email);
+      
+      // Dispatch event for chatbot
+      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      
+      // Navigate immediately without waiting for profile creation
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       console.error('Google login failed:', error);
       setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsGoogleLoading(false);
     }
-    setIsGoogleLoading(false);
   };
 
   const handleGitHubLogin = async () => {
@@ -56,27 +68,21 @@ export default function LoginPage() {
     setError('');
     
     try {
-      await signInWithGithub();
-      handleSuccessfulAuth();
+      console.log('Attempting GitHub login...');
+      const result = await signInWithGithub();
+      console.log('GitHub login successful:', result.user.email);
+      
+      // Dispatch event for chatbot
+      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      
+      // Navigate immediately without waiting for profile creation
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       console.error('GitHub login failed:', error);
       setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsGitHubLoading(false);
     }
-    setIsGitHubLoading(false);
-  };
-
-  const handleSuccessfulAuth = () => {
-    // Set legacy localStorage for existing components
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('user_logged_in', 'true');
-    
-    // Dispatch events for chatbot compatibility
-    window.dispatchEvent(new Event('authStateChanged'));
-    window.dispatchEvent(new Event('userLoggedIn'));
-    window.dispatchEvent(new Event('loginSuccess'));
-    
-    // Navigate to dashboard
-    navigate('/dashboard');
   };
 
   const getFirebaseErrorMessage = (errorCode) => {
@@ -92,16 +98,29 @@ export default function LoginPage() {
       case 'auth/too-many-requests':
         return 'Too many failed login attempts. Please try again later.';
       case 'auth/popup-closed-by-user':
-        return 'Sign-in was cancelled.';
+        return 'Sign-in was cancelled. Please try again.';
       case 'auth/popup-blocked':
-        return 'Pop-up blocked. Please allow pop-ups and try again.';
+        return 'Pop-up blocked. Please allow pop-ups for this site and try again.';
+      case 'auth/cancelled-popup-request':
+        return 'Only one popup request is allowed at one time.';
+      case 'auth/account-exists-with-different-credential':
+        return 'An account already exists with the same email but different sign-in credentials.';
+      case 'auth/auth-domain-config-required':
+        return 'Authentication configuration error. Please contact support.';
+      case 'auth/operation-not-allowed':
+        return 'This sign-in method is not enabled. Please contact support.';
+      case 'auth/operation-not-supported-in-this-environment':
+        return 'This operation is not supported in this environment.';
+      case 'auth/timeout':
+        return 'The operation timed out. Please try again.';
       default:
+        console.error('Unhandled auth error:', errorCode);
         return 'An error occurred during sign-in. Please try again.';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <motion.div
@@ -265,6 +284,9 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Add Chatbot Component */}
+      <ChatBot />
     </div>
   );
 }

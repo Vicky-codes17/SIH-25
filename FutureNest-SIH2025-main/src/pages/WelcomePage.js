@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Loader2,
 } from 'lucide-react';
+import ChatBot from '../components/chatbot/ChatBot';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
@@ -501,6 +502,8 @@ export default function WelcomePage() {
           </div>
         </div>
       </footer>
+
+      <ChatBot />
     </div>
   );
 }
