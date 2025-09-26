@@ -26,8 +26,7 @@ export default function SignUpPage() {
   });
 
   const navigate = useNavigate();
-
-  const { signup, signInWithGoogle, signInWithGithub } = useAuth();
+  const { currentUser, userProfile, login, signup, logout, signInWithGoogle, signInWithGithub } = useAuth();
 
   const handleEmailSignup = async (e) => {
     e.preventDefault();
@@ -52,44 +51,40 @@ export default function SignUpPage() {
     setError('');
     
     try {
-      const additionalData = {
-        displayName: `${formData.firstName} ${formData.lastName}`,
-        phone: formData.phone,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        provider: 'email'
-      };
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+      console.log('📝 Attempting signup with:', { 
+        email: formData.email, 
+        name: fullName,
+        phone: formData.phone 
+      });
       
-      await signup(formData.email, formData.password, additionalData);
-      handleSuccessfulAuth();
+      // Use Firebase authentication with name
+      const result = await signup(formData.email, formData.password, fullName);
+      console.log('✅ Signup successful:', result.user);
+      
+      // Set legacy localStorage for existing components
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user_logged_in', 'true');
+      
+      // Dispatch events for chatbot compatibility
+      window.dispatchEvent(new Event('authStateChanged'));
+      window.dispatchEvent(new Event('userLoggedIn'));
+      window.dispatchEvent(new Event('loginSuccess'));
+      
+      // New users always go to student info first
+      navigate('/student-info', { replace: true });
+      
     } catch (error) {
-      console.error('Signup failed:', error);
+      console.error('❌ Signup error:', error);
       setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleSuccessfulAuth = () => {
-    // Set legacy localStorage for existing components
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('user_logged_in', 'true');
-    
-    // Dispatch events for chatbot compatibility
-    window.dispatchEvent(new Event('authStateChanged'));
-    window.dispatchEvent(new Event('userSignedUp'));
-    window.dispatchEvent(new Event('signupSuccess'));
-    window.dispatchEvent(new Event('userLoggedIn'));
-    
-    // Navigate to dashboard
-    navigate('/dashboard');
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    // Navigate to dashboard after successful auth
+    navigate('/dashboard', { replace: true });
   };
 
   const handleGoogleSignup = async () => {
@@ -97,13 +92,16 @@ export default function SignUpPage() {
     setError('');
     
     try {
+      console.log('🔥 Attempting Google signup');
       await signInWithGoogle();
+      console.log('✅ Google signup successful');
       handleSuccessfulAuth();
     } catch (error) {
-      console.error('Google signup failed:', error);
+      console.error('❌ Google signup failed:', error);
       setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsGoogleLoading(false);
     }
-    setIsGoogleLoading(false);
   };
 
   const handleGitHubSignup = async () => {
@@ -111,31 +109,30 @@ export default function SignUpPage() {
     setError('');
     
     try {
+      console.log('🔥 Attempting GitHub signup');
       await signInWithGithub();
+      console.log('✅ GitHub signup successful');
       handleSuccessfulAuth();
     } catch (error) {
-      console.error('GitHub signup failed:', error);
+      console.error('❌ GitHub signup failed:', error);
       setError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsGitHubLoading(false);
     }
-    setIsGitHubLoading(false);
   };
 
   const getFirebaseErrorMessage = (errorCode) => {
     switch (errorCode) {
       case 'auth/email-already-in-use':
         return 'An account with this email already exists.';
-      case 'auth/invalid-email':
-        return 'Invalid email address format.';
-      case 'auth/operation-not-allowed':
-        return 'Email/password accounts are not enabled.';
       case 'auth/weak-password':
         return 'Password should be at least 6 characters long.';
-      case 'auth/popup-closed-by-user':
-        return 'Sign-up was cancelled.';
-      case 'auth/popup-blocked':
-        return 'Pop-up blocked. Please allow pop-ups and try again.';
+      case 'auth/invalid-email':
+        return 'Please enter a valid email address.';
+      case 'auth/network-request-failed':
+        return 'Network error. Please check your connection.';
       default:
-        return 'An error occurred during sign-up. Please try again.';
+        return 'Signup failed. Please try again.';
     }
   };
 

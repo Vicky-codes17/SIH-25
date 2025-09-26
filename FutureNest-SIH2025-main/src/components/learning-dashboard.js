@@ -20,8 +20,6 @@ import {
   Loader2,
   Trophy,
   Monitor,
-  Wifi,
-  WifiOff,
 } from "lucide-react"
 import { CollegesList } from "./CollegesList"
 import { EbooksList } from "./EbooksList"
@@ -30,6 +28,7 @@ import { ExamsList } from "./ExamsList"
 import { Footer } from "./Footer"
 import { useAuth } from '../contexts/AuthContext';
 import ChatBot from './chatbot/ChatBot';
+import { ScholarshipsList } from "./ScholarshipsList"
 
 const dashboardSections = [
   {
@@ -84,11 +83,8 @@ const dashboardSections = [
 ]
 
 export function LearningDashboard() {
-  // MOVE ALL HOOKS TO THE TOP - BEFORE ANY CONDITIONAL LOGIC OR RETURNS
   const navigate = useNavigate()
   const location = useLocation()
-  const { currentUser, logout, updateUserProfile, isOnline } = useAuth();
-  
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [showProfileDropdown, setShowProfileDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -96,10 +92,11 @@ export function LearningDashboard() {
   const [showEbooksList, setShowEbooksList] = useState(false)
   const [showCoursesList, setShowCoursesList] = useState(false)
   const [showExamsList, setShowExamsList] = useState(false)
+  const [showScholarshipsList, setShowScholarshipsList] = useState(false)
   const [navigationHistory, setNavigationHistory] = useState([])
   const dropdownRef = useRef(null)
-
-  // ALL useEffect hooks must be at the top level
+  
+  const { currentUser, userProfile, login, signup, logout } = useAuth();
   // Prevent back navigation to login/auth pages
   useEffect(() => {
     const handlePopState = (event) => {
@@ -120,14 +117,15 @@ export function LearningDashboard() {
         return
       }
       
-      // If we're in a list view, go back to dashboard instead of browser back
-      if (showCollegesList || showEbooksList || showCoursesList || showExamsList) {
+      // If we're in any list view, go back to dashboard
+      if (showCollegesList || showEbooksList || showCoursesList || showExamsList || showScholarshipsList) {
         event.preventDefault()
-        // Reset all list states to show dashboard
+        // Reset all states to show dashboard
         setShowCollegesList(false)
         setShowEbooksList(false)
         setShowCoursesList(false)
         setShowExamsList(false)
+        setShowScholarshipsList(false)
       }
     }
 
@@ -143,7 +141,7 @@ export function LearningDashboard() {
     return () => {
       window.removeEventListener('popstate', handlePopState)
     }
-  }, [showCollegesList, showEbooksList, showCoursesList, showExamsList])
+  }, [showCollegesList, showEbooksList, showCoursesList, showExamsList, showScholarshipsList])
 
   // Store the previous page in navigation history
   useEffect(() => {
@@ -153,7 +151,7 @@ export function LearningDashboard() {
     if (previousPage && !navigationHistory.includes(previousPage)) {
       setNavigationHistory(prev => [...prev, previousPage])
     }
-  }, [location, navigationHistory])
+  }, [location])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -169,42 +167,12 @@ export function LearningDashboard() {
     }
   }, [])
 
-  // Check if user just completed quiz
-  useEffect(() => {
-    const quizCompleted = localStorage.getItem('quizCompleted');
-    const quizScore = localStorage.getItem('quizScore');
-    const quizResults = localStorage.getItem('quizResults');
-
-    if (quizCompleted && quizScore) {
-      // Save quiz results to Firebase
-      updateUserProfile({
-        quizCompleted: true,
-        quizScore: parseInt(quizScore),
-        quizResults: JSON.parse(quizResults || '{}'),
-        quizCompletedAt: new Date().toISOString(),
-        onboardingCompleted: true
-      }).then(() => {
-        // Clear localStorage after saving
-        localStorage.removeItem('quizCompleted');
-        localStorage.removeItem('quizScore');
-        localStorage.removeItem('quizResults');
-      }).catch(error => {
-        console.error('Error saving quiz results:', error);
-      });
-    }
-  }, [updateUserProfile]);
-
-  // NOW DEFINE ALL YOUR HANDLER FUNCTIONS
   const handleSectionClick = (section) => {
     if (section.title === "Roadmaps") {
-      // Use replace instead of navigate to prevent back to dashboard in browser history
-      navigate('/roadmaps', { 
-        state: { from: '/dashboard' },
-        replace: false 
-      })
+      // Simply open the HTML file in the same tab
+      window.location.href = '/smart-roadmaps-react.html';
     } else if (section.title === "Colleges") {
       setShowCollegesList(true)
-      // Update browser state but don't create new history entry
       window.history.pushState({ 
         view: 'colleges',
         previousPath: '/dashboard' 
@@ -227,12 +195,17 @@ export function LearningDashboard() {
         view: 'exams',
         previousPath: '/dashboard' 
       }, '', '/dashboard/exams')
+    } else if (section.title === "Scholarships") {
+      setShowScholarshipsList(true)
+      window.history.pushState({ 
+        view: 'scholarships',
+        previousPath: '/dashboard' 
+      }, '', '/dashboard/scholarships')
     } else {
       alert(`${section.title} feature coming soon!`)
     }
   }
 
-  // Separate back handlers for each list component - these always go back to dashboard
   const handleBackFromColleges = () => {
     setShowCollegesList(false)
     // Update URL back to dashboard
@@ -262,7 +235,13 @@ export function LearningDashboard() {
     }, '', '/dashboard')
   }
 
-  // This function is for external navigation (when dashboard itself needs to go back)
+  const handleBackFromScholarships = () => {
+    setShowScholarshipsList(false)
+    window.history.pushState({ 
+      previousPath: '/dashboard' 
+    }, '', '/dashboard')
+  }
+
   const handleBackToDashboard = () => {
     // Check if there's a previous page to go back to (but not login/auth pages)
     const previousPage = location.state?.from
@@ -280,27 +259,30 @@ export function LearningDashboard() {
       setShowEbooksList(false)
       setShowCoursesList(false)
       setShowExamsList(false)
+      setShowScholarshipsList(false)
     }
   }
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     setIsLoggingOut(true)
     setShowProfileDropdown(false)
     
-    try {
-      // Use Firebase logout instead of localStorage
-      await logout()
+    // Simulate logout process with a delay
+    setTimeout(() => {
+      // Clear any user data, tokens, etc.
+      localStorage.removeItem('userToken')
+      localStorage.removeItem('userData')
+      localStorage.removeItem('isAuthenticated')
+      localStorage.removeItem('googleAuthData')
+      localStorage.removeItem('githubAuthData')
       
       // Clear browser history to prevent going back to authenticated pages
       window.history.replaceState(null, '', '/')
       
       // Navigate to welcome page
       navigate('/', { replace: true })
-    } catch (error) {
-      console.error('Logout error:', error)
-    } finally {
       setIsLoggingOut(false)
-    }
+    }, 2000)
   }
 
   const handleProfileClick = () => {
@@ -330,48 +312,26 @@ export function LearningDashboard() {
     section.description.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // NOW HANDLE THE CONDITIONAL RENDERS AFTER ALL HOOKS
-  // Show colleges list if requested - use specific back handler
   if (showCollegesList) {
-    return (
-      <>
-        <CollegesList onBack={handleBackFromColleges} />
-        <ChatBot />
-      </>
-    )
+    return <CollegesList onBack={handleBackFromColleges} />
   }
 
-  // Show ebooks list if requested - use specific back handler
   if (showEbooksList) {
-    return (
-      <>
-        <EbooksList onBack={handleBackFromEbooks} />
-        <ChatBot />
-      </>
-    )
+    return <EbooksList onBack={handleBackFromEbooks} />
   }
 
-  // Show courses list if requested - use specific back handler
   if (showCoursesList) {
-    return (
-      <>
-        <CoursesList onBack={handleBackFromCourses} />
-        <ChatBot />
-      </>
-    )
+    return <CoursesList onBack={handleBackFromCourses} />
   }
 
-  // Show exams list if requested - use specific back handler
   if (showExamsList) {
-    return (
-      <>
-        <ExamsList onBack={handleBackFromExams} />
-        <ChatBot />
-      </>
-    )
+    return <ExamsList onBack={handleBackFromExams} />
   }
 
-  // MAIN DASHBOARD RENDER
+  if (showScholarshipsList) {
+    return <ScholarshipsList onBack={handleBackFromScholarships} />
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Logout Loading Overlay */}
@@ -424,9 +384,6 @@ export function LearningDashboard() {
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <User className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-sm font-medium text-gray-700">
-                  {currentUser?.displayName || currentUser?.email || 'User'}
-                </span>
                 <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${showProfileDropdown ? 'rotate-180' : ''}`} />
               </button>
 
@@ -489,28 +446,6 @@ export function LearningDashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Learning Resources</h1>
           </div>
           <p className="text-gray-600 text-lg">Explore educational opportunities and resources</p>
-          
-          {/* Add Welcome Message */}
-          {currentUser && (
-            <div className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-blue-200">
-              <p className="text-lg text-gray-800">
-                Welcome back, <span className="font-semibold text-blue-600">
-                  {currentUser.displayName || currentUser.email || 'User'}
-                </span>! 
-                Ready to continue your learning journey?
-              </p>
-            </div>
-          )}
-
-          {/* Add Network Status Indicator */}
-          {!isOnline && (
-            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
-              <WifiOff className="w-5 h-5 text-yellow-600" />
-              <p className="text-yellow-800">
-                You're currently offline. Some features may be limited.
-              </p>
-            </div>
-          )}
         </div>
 
         {/* Resources Grid */}

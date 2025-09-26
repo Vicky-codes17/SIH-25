@@ -18,9 +18,11 @@ import {
   Loader2,
 } from 'lucide-react';
 import ChatBot from '../components/chatbot/ChatBot';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function WelcomePage() {
   const navigate = useNavigate();
+  const { currentUser, userProfile, login, signup, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState('');
 
@@ -28,7 +30,8 @@ export default function WelcomePage() {
     setLoading(true);
     setLoadingText('Preparing your login experience...');
     setTimeout(() => {
-      navigate('/login');
+      // After successful login
+      navigate('/dashboard', { replace: true });
     }, 800); // 0.8 seconds loading
   };
 

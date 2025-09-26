@@ -17,8 +17,41 @@ export default function LoginPage() {
   
   const { login, signInWithGoogle, signInWithGithub } = useAuth();
 
+  // Helper function to determine user flow based on profile completion
+  const navigateBasedOnUserState = (userProfile) => {
+    // Set legacy localStorage for existing components
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('user_logged_in', 'true');
+    
+    // Dispatch events for chatbot compatibility
+    window.dispatchEvent(new Event('authStateChanged'));
+    window.dispatchEvent(new Event('userLoggedIn'));
+    window.dispatchEvent(new Event('loginSuccess'));
+    
+    if (!userProfile) {
+      // New user - start onboarding flow
+      navigate('/student-info', { replace: true });
+    } else if (!userProfile.studentInfoCompleted) {
+      // User hasn't completed student info
+      navigate('/student-info', { replace: true });
+    } else if (!userProfile.quizCompleted && !userProfile.onboardingCompleted) {
+      // Student info completed but quiz not taken
+      navigate('/quiz', { replace: true });
+    } else {
+      // Existing user with completed profile - go to dashboard
+      navigate('/dashboard', { replace: true });
+    }
+  };
+
+  // Helper function to check if user exists by email (for social logins)
+  const findUserByEmail = (email) => {
+    const existingUsers = JSON.parse(localStorage.getItem('futurenest_users') || '[]');
+    return existingUsers.find(u => u.email === email);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
@@ -28,15 +61,24 @@ export default function LoginPage() {
     setError('');
     
     try {
-      await login(email, password);
+      console.log('🔐 Attempting login with:', email);
+    
+      // Use local authentication
+      const result = await login(email, password);
+      console.log('✅ Login successful:', result.user);
       
-      // Dispatch event for chatbot
-      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      // Wait a moment for profile to load, then navigate based on user state
+      setTimeout(() => {
+        // Get updated user profile from localStorage
+        const profileData = localStorage.getItem(`futurenest_profile_${result.user.uid}`);
+        const userProfile = profileData ? JSON.parse(profileData) : null;
+        
+        navigateBasedOnUserState(userProfile);
+      }, 100);
       
-      // Navigate to student info first
-      navigate('/student-info', { replace: true });
     } catch (error) {
-      setError(getFirebaseErrorMessage(error.code));
+      console.error('❌ Login error:', error);
+      setError(getErrorMessage(error.message));
     } finally {
       setIsLoading(false);
     }
@@ -47,18 +89,49 @@ export default function LoginPage() {
     setError('');
     
     try {
-      console.log('Attempting Google login...');
       const result = await signInWithGoogle();
-      console.log('Google login successful:', result.user.email);
+      console.log('✅ Google login successful:', result.user);
       
-      // Dispatch event for chatbot
-      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      // Set legacy localStorage for existing components
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user_logged_in', 'true');
       
-      // Navigate immediately without waiting for profile creation
-      navigate('/student-info', { replace: true });
+      // Dispatch events for chatbot compatibility
+      window.dispatchEvent(new Event('authStateChanged'));
+      window.dispatchEvent(new Event('userLoggedIn'));
+      window.dispatchEvent(new Event('loginSuccess'));
+      
+      // Check if existing user with this email exists
+      const existingUser = findUserByEmail(result.user.email);
+      
+      setTimeout(() => {
+        if (existingUser) {
+          // Check profile of existing user
+          const profileData = localStorage.getItem(`futurenest_profile_${existingUser.uid}`);
+          const userProfile = profileData ? JSON.parse(profileData) : null;
+          
+          if (userProfile && userProfile.studentInfoCompleted && 
+              (userProfile.quizCompleted || userProfile.onboardingCompleted)) {
+            // Existing user with completed profile - go to dashboard
+            console.log('✅ Existing Google user with completed profile - redirecting to dashboard');
+            navigate('/dashboard', { replace: true });
+          } else {
+            // Existing user but incomplete profile
+            navigateBasedOnUserState(userProfile);
+          }
+        } else {
+          // New Google user - check profile created during signup
+          const profileData = localStorage.getItem(`futurenest_profile_${result.user.uid}`);
+          const userProfile = profileData ? JSON.parse(profileData) : null;
+          
+          // For new social login users, start with student info
+          navigate('/student-info', { replace: true });
+        }
+      }, 100);
+      
     } catch (error) {
       console.error('Google login failed:', error);
-      setError(getFirebaseErrorMessage(error.code));
+      setError(getErrorMessage(error.message));
     } finally {
       setIsGoogleLoading(false);
     }
@@ -69,55 +142,65 @@ export default function LoginPage() {
     setError('');
     
     try {
-      console.log('Attempting GitHub login...');
       const result = await signInWithGithub();
-      console.log('GitHub login successful:', result.user.email);
+      console.log('✅ GitHub login successful:', result.user);
       
-      // Dispatch event for chatbot
-      window.dispatchEvent(new CustomEvent('loginSuccess'));
+      // Set legacy localStorage for existing components
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user_logged_in', 'true');
       
-      // Navigate immediately without waiting for profile creation
-      navigate('/student-info', { replace: true });
+      // Dispatch events for chatbot compatibility
+      window.dispatchEvent(new Event('authStateChanged'));
+      window.dispatchEvent(new Event('userLoggedIn'));
+      window.dispatchEvent(new Event('loginSuccess'));
+      
+      // Check if existing user with this email exists
+      const existingUser = findUserByEmail(result.user.email);
+      
+      setTimeout(() => {
+        if (existingUser) {
+          // Check profile of existing user
+          const profileData = localStorage.getItem(`futurenest_profile_${existingUser.uid}`);
+          const userProfile = profileData ? JSON.parse(profileData) : null;
+          
+          if (userProfile && userProfile.studentInfoCompleted && 
+              (userProfile.quizCompleted || userProfile.onboardingCompleted)) {
+            // Existing user with completed profile - go to dashboard
+            console.log('✅ Existing GitHub user with completed profile - redirecting to dashboard');
+            navigate('/dashboard', { replace: true });
+          } else {
+            // Existing user but incomplete profile
+            navigateBasedOnUserState(userProfile);
+          }
+        } else {
+          // New GitHub user - check profile created during signup
+          const profileData = localStorage.getItem(`futurenest_profile_${result.user.uid}`);
+          const userProfile = profileData ? JSON.parse(profileData) : null;
+          
+          // For new social login users, start with student info
+          navigate('/student-info', { replace: true });
+        }
+      }, 100);
+      
     } catch (error) {
       console.error('GitHub login failed:', error);
-      setError(getFirebaseErrorMessage(error.code));
+      setError(getErrorMessage(error.message));
     } finally {
       setIsGitHubLoading(false);
     }
   };
 
-  const getFirebaseErrorMessage = (errorCode) => {
-    switch (errorCode) {
-      case 'auth/user-not-found':
-        return 'No account found with this email address.';
-      case 'auth/wrong-password':
-        return 'Incorrect password. Please try again.';
-      case 'auth/invalid-email':
-        return 'Invalid email address format.';
-      case 'auth/user-disabled':
-        return 'This account has been disabled.';
-      case 'auth/too-many-requests':
-        return 'Too many failed login attempts. Please try again later.';
-      case 'auth/popup-closed-by-user':
-        return 'Sign-in was cancelled. Please try again.';
-      case 'auth/popup-blocked':
-        return 'Pop-up blocked. Please allow pop-ups for this site and try again.';
-      case 'auth/cancelled-popup-request':
-        return 'Only one popup request is allowed at one time.';
-      case 'auth/account-exists-with-different-credential':
-        return 'An account already exists with the same email but different sign-in credentials.';
-      case 'auth/auth-domain-config-required':
-        return 'Authentication configuration error. Please contact support.';
-      case 'auth/operation-not-allowed':
-        return 'This sign-in method is not enabled. Please contact support.';
-      case 'auth/operation-not-supported-in-this-environment':
-        return 'This operation is not supported in this environment.';
-      case 'auth/timeout':
-        return 'The operation timed out. Please try again.';
-      default:
-        console.error('Unhandled auth error:', errorCode);
-        return 'An error occurred during sign-in. Please try again.';
+  const getErrorMessage = (errorMessage) => {
+    if (errorMessage?.includes('User already exists')) {
+      return 'An account with this email already exists. Please sign in instead.';
     }
+    if (errorMessage?.includes('No user found')) {
+      return 'No account found with this email address. Please sign up first.';
+    }
+    if (errorMessage?.includes('Invalid email')) {
+      return 'Please enter a valid email address.';
+    }
+    return errorMessage || 'Login failed. Please try again.';
   };
 
   return (
@@ -160,7 +243,7 @@ export default function LoginPage() {
           <div className="space-y-3 mb-6">
             <button
               onClick={handleGoogleLogin}
-              disabled={isGoogleLoading || isGitHubLoading}
+              disabled={isGoogleLoading || isGitHubLoading || isLoading}
               className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Chrome className="w-5 h-5 mr-3 text-red-500" />
@@ -177,7 +260,7 @@ export default function LoginPage() {
             </button>
             <button
               onClick={handleGitHubLogin}
-              disabled={isGoogleLoading || isGitHubLoading}
+              disabled={isGoogleLoading || isGitHubLoading || isLoading}
               className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Github className="w-5 h-5 mr-3 text-slate-800" />
@@ -283,6 +366,36 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
+        </motion.div>
+
+        {/* Additional Page Content - Shows login page content */}
+        <motion.div
+          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 mb-6">
+            <h2 className="text-lg font-semibold text-slate-800 mb-3">Why Choose FutureNest?</h2>
+            <div className="grid grid-cols-1 gap-4 text-sm text-slate-600">
+              <div className="flex items-center justify-center">
+                <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></div>
+                AI-Powered Career Guidance
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></div>
+                Personalized Learning Paths
+              </div>
+              <div className="flex items-center justify-center">
+                <div className="w-2 h-2 bg-indigo-500 rounded-full mr-3"></div>
+                Industry Expert Mentorship
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-slate-500 text-sm">
+            Join thousands of students discovering their perfect career path
+          </p>
         </motion.div>
       </div>
 

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ChatBot from '../components/chatbot/ChatBot';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -14,6 +15,7 @@ export default function UserProfile() {
   const [editData, setEditData] = useState({});
   
   const { currentUser, userProfile, updateUserProfile, logout } = useAuth();
+  const navigate = useNavigate();
 
   // Use currentUser data from dummy auth
   const profileData = {
@@ -83,6 +85,12 @@ export default function UserProfile() {
     { test: "Verbal Ability", score: 92, maxScore: 100, date: "Dec 5, 2024" },
     { test: "Technical Skills", score: 88, maxScore: 100, date: "Nov 28, 2024" },
   ];
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/', { replace: true });
+    }
+  }, [currentUser, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50">

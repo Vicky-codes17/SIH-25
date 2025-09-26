@@ -1,0 +1,72 @@
+[
+  {
+    "id": "ntse",
+    "name": "National Talent Search Examination (NTSE)",
+    "level": "After Class 10",
+    "eligibility": "Meritorious students of Class 10 (state + national stages)",
+    "link": "https://ntse.ncert.gov.in/"
+  },
+  {
+    "id": "nmms",
+    "name": "National Means-cum-Merit Scholarship (NMMS)",
+    "level": "Supports students from Class 9 to 12",
+    "eligibility": "Students from economically weaker families (state-wise selection)",
+    "link": "https://www.education.gov.in/en/nmms"
+  },
+  {
+    "id": "central_sector",
+    "name": "Central Sector Scheme of Scholarship (via NSP)",
+    "level": "After Class 12 (for higher education)",
+    "eligibility": "Meritorious students with income criteria — apply on National Scholarship Portal",
+    "link": "https://scholarships.gov.in/"
+  },
+  {
+    "id": "inspire",
+    "name": "INSPIRE (DST) - MANAK / SHE",
+    "level": "Class 6-12 (MANAK) and Class 12 / Higher Education (SHE)",
+    "eligibility": "Science/innovation talent; separate streams for school awards and higher-education scholarships",
+    "link": "https://online-inspire.gov.in/"
+  },
+  {
+    "id": "cbse_sgc",
+    "name": "CBSE Merit Scholarship for Single Girl Child",
+    "level": "After Class 10 (for girls)",
+    "eligibility": "Single girl child who passed CBSE Class X and pursues Class XI/XII from CBSE school",
+    "link": "https://www.cbse.gov.in/cbsenew/scholar.html"
+  },
+  {
+    "id": "azim_premji",
+    "name": "Azim Premji Foundation Scholarship",
+    "level": "After Class 10 / 12 (focus on girls from government schools)",
+    "eligibility": "Girls from government schools seeking undergraduate courses; see foundation page for details",
+    "link": "https://azimpremjifoundation.org/what-we-do/education/azim-premji-scholarship/"
+  },
+  {
+    "id": "aakash",
+    "name": "Aakash Scholarships (coaching & merit programmes)",
+    "level": "Students preparing after Class 10 / 12 for boards & entrance exams",
+    "eligibility": "Merit-based (exam on Aakash portal) — coaching fee waivers & scholarships",
+    "link": "https://www.aakash.ac.in/various-scholarships-aakash"
+  },
+  {
+    "id": "maulana_azad",
+    "name": "Maulana Azad National Scholarship Scheme (for meritorious minority girls)",
+    "level": "After Class 10 / 12 (girls from minority communities)",
+    "eligibility": "Meritorious girl students from minority communities — check MAEF site",
+    "link": "https://www.maef.nic.in/scholarship-scheme"
+  },
+  {
+    "id": "aditya_birla",
+    "name": "Aditya Birla Scholarships",
+    "level": "After Class 12 / college entry (merit & leadership)",
+    "eligibility": "High-performing students selected for UG/PG professional courses (see site for institute list)",
+    "link": "https://www.adityabirlascholars.net/"
+  },
+  {
+    "id": "tata_trusts",
+    "name": "Tata Trusts / Tata Scholarships (grants & individual scholarships)",
+    "level": "Class 8 onward (varies by programme)",
+    "eligibility": "Different Tata programmes cover school and higher-ed students — check Tata Trusts Education grants",
+    "link": "https://www.tatatrusts.org/our-work/individual-grants-programme/education-grants"
+  }
+]

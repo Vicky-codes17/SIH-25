@@ -1,22 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-} from 'firebase/auth';
-import { 
-  doc, 
-  setDoc, 
-  getDoc, 
-  updateDoc,
-  serverTimestamp,
-  enableNetwork,
-  disableNetwork
-} from 'firebase/firestore';
-import { auth, db, googleProvider, githubProvider } from '../config/firebase';
 
 const AuthContext = createContext();
 
@@ -32,140 +14,98 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-  // Monitor network status
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      console.log('Network connection restored');
-    };
-    
-    const handleOffline = () => {
-      setIsOnline(false);
-      console.log('Network connection lost');
-    };
+  // Local storage keys
+  const USER_STORAGE_KEY = 'futurenest_user';
+  const PROFILE_STORAGE_KEY = 'futurenest_profile';
 
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+  // Generate unique user ID
+  const generateUserId = () => {
+    return 'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+  };
 
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  // Create user profile with better error handling
+  // Create user profile in local storage
   const createUserProfile = async (user, additionalData = {}) => {
     if (!user) return;
     
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
+    const existingProfile = localStorage.getItem(PROFILE_STORAGE_KEY + '_' + user.uid);
+    
+    if (!existingProfile) {
+      const createdAt = new Date().toISOString();
+      const userProfileData = {
+        uid: user.uid,
+        displayName: user.displayName || additionalData.name || '',
+        email: user.email,
+        photoURL: user.photoURL || '',
+        createdAt,
+        lastLogin: new Date().toISOString(),
+        level: 1,
+        xp: 0,
+        skillsCompleted: 0,
+        testsTaken: 0,
+        studyHours: 0,
+        careerPaths: [],
+        ...additionalData
+      };
       
-      if (!userSnap.exists()) {
-        const { displayName, email, photoURL } = user;
-        const profileData = {
-          displayName: displayName || additionalData.name || '',
-          email,
-          photoURL: photoURL || '',
-          createdAt: serverTimestamp(),
-          lastLogin: serverTimestamp(),
-          level: 1,
-          xp: 0,
-          skillsCompleted: 0,
-          testsTaken: 0,
-          studyHours: 0,
-          careerPaths: [],
-          ...additionalData
-        };
-        
-        await setDoc(userRef, profileData);
-        setUserProfile(profileData);
-        console.log('User profile created successfully');
-      } else {
-        // Update last login
-        await updateDoc(userRef, {
-          lastLogin: serverTimestamp()
-        });
-        const existingProfile = userSnap.data();
-        setUserProfile(existingProfile);
-        console.log('User login updated successfully');
-      }
-      
-      return userRef;
-    } catch (error) {
-      console.error('Profile creation/update failed:', error);
-      
-      // If offline, create a minimal local profile
-      if (error.code === 'unavailable' || !isOnline) {
-        const fallbackProfile = {
-          displayName: user.displayName || user.email,
-          email: user.email,
-          photoURL: user.photoURL || '',
-          offline: true
-        };
-        setUserProfile(fallbackProfile);
-        console.log('Using offline fallback profile');
-      }
-      
-      // Don't throw error - allow auth to succeed even if profile creation fails
-      return null;
+      localStorage.setItem(PROFILE_STORAGE_KEY + '_' + user.uid, JSON.stringify(userProfileData));
+      setUserProfile(userProfileData);
+    } else {
+      // Update last login
+      const profile = JSON.parse(existingProfile);
+      profile.lastLogin = new Date().toISOString();
+      localStorage.setItem(PROFILE_STORAGE_KEY + '_' + user.uid, JSON.stringify(profile));
+      setUserProfile(profile);
     }
   };
 
-  // Fetch user profile with offline handling
+  // Fetch user profile from local storage
   const fetchUserProfile = async (uid) => {
     try {
-      const userRef = doc(db, 'users', uid);
-      const userSnap = await getDoc(userRef);
+      const profileData = localStorage.getItem(PROFILE_STORAGE_KEY + '_' + uid);
       
-      if (userSnap.exists()) {
-        const profileData = userSnap.data();
-        setUserProfile(profileData);
-        return profileData;
+      if (profileData) {
+        const profile = JSON.parse(profileData);
+        setUserProfile(profile);
+        return profile;
       }
-      return null;
     } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-      // Return null instead of throwing - let the app continue
-      return null;
+      console.error('Error fetching user profile:', error);
     }
+    return null;
   };
 
-  // Update user profile with offline handling
+  // Update user profile
   const updateUserProfile = async (updates) => {
     if (!currentUser) return;
     
     try {
-      const userRef = doc(db, 'users', currentUser.uid);
-      await updateDoc(userRef, {
+      const existingProfile = localStorage.getItem(PROFILE_STORAGE_KEY + '_' + currentUser.uid);
+      let profile = existingProfile ? JSON.parse(existingProfile) : {};
+      
+      profile = {
+        ...profile,
         ...updates,
-        updatedAt: serverTimestamp()
-      });
+        updatedAt: new Date().toISOString()
+      };
       
-      // Update local state
-      setUserProfile(prev => ({ ...prev, ...updates }));
+      localStorage.setItem(PROFILE_STORAGE_KEY + '_' + currentUser.uid, JSON.stringify(profile));
+      setUserProfile(profile);
       
-      // Update Firebase Auth profile if name or photo changed
+      // Update current user if name or photo changed
       if (updates.displayName || updates.photoURL) {
-        await updateProfile(currentUser, {
-          displayName: updates.displayName,
-          photoURL: updates.photoURL
-        });
+        const updatedUser = {
+          ...currentUser,
+          displayName: updates.displayName || currentUser.displayName,
+          photoURL: updates.photoURL || currentUser.photoURL
+        };
+        setCurrentUser(updatedUser);
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
       }
       
       return true;
     } catch (error) {
       console.error('Error updating profile:', error);
-      
-      // If offline, update local state only
-      if (error.code === 'unavailable' || !isOnline) {
-        setUserProfile(prev => ({ ...prev, ...updates, offline: true }));
-        console.log('Profile updated locally (offline mode)');
-        return true;
-      }
-      
       throw error;
     }
   };
@@ -173,21 +113,41 @@ export const AuthProvider = ({ children }) => {
   // Email/Password signup
   const signup = async (email, password, name) => {
     try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('🔥 Local signup started for:', email);
       
-      // Update the user's display name
-      await updateProfile(result.user, {
-        displayName: name
-      });
+      // Check if user already exists
+      const existingUsers = JSON.parse(localStorage.getItem('futurenest_users') || '[]');
+      const userExists = existingUsers.find(u => u.email === email);
       
-      // Try to create profile, but don't fail if it doesn't work
-      createUserProfile(result.user, { displayName: name }).catch(error => {
-        console.error('Profile creation failed during signup:', error);
-      });
+      if (userExists) {
+        throw new Error('User already exists with this email');
+      }
       
-      return result;
+      // Create new user
+      const newUser = {
+        uid: generateUserId(),
+        email,
+        displayName: name,
+        photoURL: '',
+        createdAt: new Date().toISOString()
+      };
+      
+      // Save user to users list
+      existingUsers.push(newUser);
+      localStorage.setItem('futurenest_users', JSON.stringify(existingUsers));
+      
+      // Set as current user
+      setCurrentUser(newUser);
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(newUser));
+      
+      // Create user profile
+      await createUserProfile(newUser, { displayName: name });
+      
+      console.log('✅ User created:', newUser.uid);
+      
+      return { user: newUser };
     } catch (error) {
-      console.error('Signup error:', error);
+      console.error('❌ Signup error:', error);
       throw error;
     }
   };
@@ -195,48 +155,72 @@ export const AuthProvider = ({ children }) => {
   // Email/Password login
   const login = async (email, password) => {
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('🔥 Local login started for:', email);
       
-      // Try to update profile, but don't fail if it doesn't work
-      createUserProfile(result.user).catch(error => {
-        console.error('Profile update failed during login:', error);
-      });
+      // Find user in local storage
+      const existingUsers = JSON.parse(localStorage.getItem('futurenest_users') || '[]');
+      const user = existingUsers.find(u => u.email === email);
       
-      return result;
+      if (!user) {
+        throw new Error('No user found with this email');
+      }
+      
+      // Set as current user
+      setCurrentUser(user);
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+      
+      // Load/create user profile
+      await createUserProfile(user);
+      
+      console.log('✅ User logged in:', user.uid);
+      
+      return { user };
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       throw error;
     }
   };
 
-  // Google sign in with better error handling
+  // Google sign in (mock implementation)
   const signInWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      // Mock Google user data
+      const googleUser = {
+        uid: generateUserId(),
+        email: 'user@gmail.com',
+        displayName: 'Google User',
+        photoURL: 'https://via.placeholder.com/150',
+        createdAt: new Date().toISOString()
+      };
       
-      // Try to create/update profile, but don't block authentication
-      createUserProfile(result.user).catch(error => {
-        console.error('Profile creation failed during Google sign-in:', error);
-      });
+      setCurrentUser(googleUser);
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(googleUser));
+      await createUserProfile(googleUser);
       
-      return result;
+      return { user: googleUser };
     } catch (error) {
       console.error('Google sign in error:', error);
       throw error;
     }
   };
 
-  // GitHub sign in with better error handling
+  // GitHub sign in (mock implementation)
   const signInWithGithub = async () => {
     try {
-      const result = await signInWithPopup(auth, githubProvider);
+      // Mock GitHub user data
+      const githubUser = {
+        uid: generateUserId(),
+        email: 'user@github.com',
+        displayName: 'GitHub User',
+        photoURL: 'https://via.placeholder.com/150',
+        createdAt: new Date().toISOString()
+      };
       
-      // Try to create/update profile, but don't block authentication
-      createUserProfile(result.user).catch(error => {
-        console.error('Profile creation failed during GitHub sign-in:', error);
-      });
+      setCurrentUser(githubUser);
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(githubUser));
+      await createUserProfile(githubUser);
       
-      return result;
+      return { user: githubUser };
     } catch (error) {
       console.error('GitHub sign in error:', error);
       throw error;
@@ -246,7 +230,8 @@ export const AuthProvider = ({ children }) => {
   // Logout
   const logout = async () => {
     try {
-      await signOut(auth);
+      localStorage.removeItem(USER_STORAGE_KEY);
+      setCurrentUser(null);
       setUserProfile(null);
     } catch (error) {
       console.error('Logout error:', error);
@@ -254,38 +239,76 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Auth state change listener
+  // Update student information
+  const updateStudentInfo = async (studentData) => {
+    if (!currentUser) return;
+    
+    try {
+      const existingProfile = localStorage.getItem(PROFILE_STORAGE_KEY + '_' + currentUser.uid);
+      let profile = existingProfile ? JSON.parse(existingProfile) : {};
+      
+      profile = {
+        ...profile,
+        ...studentData,
+        studentInfoCompleted: true,
+        updatedAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem(PROFILE_STORAGE_KEY + '_' + currentUser.uid, JSON.stringify(profile));
+      setUserProfile(profile);
+      
+      return true;
+    } catch (error) {
+      console.error('Error updating student info:', error);
+      throw error;
+    }
+  };
+
+  // Save quiz results
+  const saveQuizResults = async (quizData) => {
+    if (!currentUser) return;
+    
+    try {
+      const existingProfile = localStorage.getItem(PROFILE_STORAGE_KEY + '_' + currentUser.uid);
+      let profile = existingProfile ? JSON.parse(existingProfile) : {};
+      
+      profile = {
+        ...profile,
+        quizResults: quizData,
+        quizCompleted: true,
+        onboardingCompleted: true,
+        updatedAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem(PROFILE_STORAGE_KEY + '_' + currentUser.uid, JSON.stringify(profile));
+      setUserProfile(profile);
+      
+      return true;
+    } catch (error) {
+      console.error('Error saving quiz results:', error);
+      throw error;
+    }
+  };
+
+  // Initialize auth state on component mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const initializeAuth = async () => {
       try {
-        if (user) {
+        const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+        
+        if (storedUser) {
+          const user = JSON.parse(storedUser);
           setCurrentUser(user);
-          
-          // Try to fetch profile, but use fallback if it fails
-          try {
-            await fetchUserProfile(user.uid);
-          } catch (error) {
-            console.error('Failed to fetch profile on auth change:', error);
-            // Create minimal fallback profile
-            setUserProfile({
-              displayName: user.displayName || user.email,
-              email: user.email,
-              photoURL: user.photoURL || '',
-              offline: true
-            });
-          }
-        } else {
-          setCurrentUser(null);
-          setUserProfile(null);
+          await fetchUserProfile(user.uid);
         }
       } catch (error) {
-        console.error('Auth state change error:', error);
+        console.error('Error initializing auth:', error);
       } finally {
         setLoading(false);
       }
-    });
+    };
 
-    return unsubscribe;
+    initializeAuth();
   }, []);
 
   const value = {
@@ -297,10 +320,11 @@ export const AuthProvider = ({ children }) => {
     signInWithGoogle,
     signInWithGithub,
     updateUserProfile,
-    updateProfile: updateUserProfile,
+    updateProfile: updateUserProfile, // Alias for compatibility
     fetchUserProfile,
-    loading,
-    isOnline
+    updateStudentInfo,
+    saveQuizResults,
+    loading
   };
 
   return (
